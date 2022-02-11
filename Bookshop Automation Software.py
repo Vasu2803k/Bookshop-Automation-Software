@@ -21,14 +21,52 @@ def main_window():
     software_name.grid(row=0,column=0,columnspan=2)
 
 #software_name.pack() // cannot be used both grid and pack at once.
-def open():
+def enter_button():
+    global input_name
+    global curr_name
+    global root3
+    curr_name=input_name.get()
     
-    open_label=Label(root, text="Check for availabilty", padx=100, pady=20, bg="Orange")
-    open_label.grid(row=2,column=0,columnspan=2)
-    input_name=Entry(root, text="Enter Author name or title of the book", width=40, borderwidth=10)
-    input_name.grid(row=3,columnspan=2)
-
+    input_name.delete(0, END)
+    
+    author_name=Label(root3, text="Author name: "+ curr_name.title(), padx=40, pady=40 ,bg="lightblue")
+    author_name.grid(row=4,column=0,columnspan=2)
+    # check in database 
+    
 def clear_button():
+    global input_name
+    input_name.delete(0,END)
+def check_availability():
+    root.destroy()
+    global root3
+    global input_name
+    global curr_name
+    root3=Tk()
+
+    root3.title("BOOKSHOP AUTOMATION SYSTEM")
+    input_name=Entry(root3,width=40, borderwidth=10)
+    
+    check_label=Label(root3, text="Enter Author name or title of the book :)", padx=100, pady=20, bg="yellow")
+    check_label.grid(row=0,column=0,columnspan=2)
+    input_name.grid(row=1,column=0,columnspan=2)
+    
+    clear_button1=Button(root3, text="clear",bd=10, padx=80, pady=20, bg="Orange",command=clear_button)
+    enter_button1=Button(root3, text="enter",bd=10, padx=80, pady=20, bg="Orange",command=enter_button)
+    clear_button1.grid(row=2,column=0)
+    enter_button1.grid(row=2,column=1)
+
+    curr_name=input_name.get()
+    
+    
+
+def open():
+
+    check_availability1=Button(root, text="Check for availabilty",bd=10, padx=100, pady=20, bg="Orange",command=check_availability)
+    check_availability1.grid(row=2,column=0,columnspan=2)
+    
+    
+    
+def clear():
     root2.destroy()
     
 
@@ -40,17 +78,17 @@ def close():
     
     close_label=Label(root2, text="Thanks!, visit again:) ",bg="red", padx=50,pady=50)
     close_label.pack()
-    button_clear=Button(root2, text="Clear! ", bg="Blue", padx=50, pady=25, bd=10, command=clear_button)
-    button_clear.pack()
+    clear1=Button(root2, text="Clear! ", bg="Blue", padx=50, pady=25, bd=10, command=clear)
+    clear1.pack()
     
     
     
 def button():   
     
-    open_button=Button(root, text="open",bd=10, padx=50, pady=25, command=open, bg="green")
-    close_button=Button(root, text="close",bd=10, padx=50, pady=25, command=close, bg="red")
-    open_button.grid(row=1,column=0)
-    close_button.grid(row=1,column=1)
+    open1=Button(root, text="open",bd=10, padx=50, pady=25, command=open, bg="green")
+    close1=Button(root, text="close",bd=10, padx=50, pady=25, command=close, bg="red")
+    open1.grid(row=1,column=0)
+    close1.grid(row=1,column=1)
 
 
 
@@ -63,7 +101,6 @@ def next_user():
     global root2
     root2.destroy()
     user()
-start=True
 
 user()
 root.mainloop()
