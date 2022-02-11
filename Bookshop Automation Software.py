@@ -66,8 +66,8 @@ def open():
     
     
     
-def clear():
-    root2.destroy()
+#def clear():
+#  root2.destroy()
     
 
 def close():
@@ -78,7 +78,7 @@ def close():
     
     close_label=Label(root2, text="Thanks!, visit again:) ",bg="red", padx=50,pady=50)
     close_label.pack()
-    clear1=Button(root2, text="Clear! ", bg="Blue", padx=50, pady=25, bd=10, command=clear)
+    clear1=Button(root2, text="Clear! ", bg="Blue", padx=50, pady=25, bd=10, command=root.quit)
     clear1.pack()
     
     
