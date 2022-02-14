@@ -14,7 +14,7 @@ various books.
 from tkinter import *
 from tkinter import font
 root=Tk()
-
+root.iconbitmap('D:\SDE\Py\Bookshop_icon_2.ico')
 def main_window():
     root.title("BOOKSHOP AUTOMATION SYSTEM")
     software_name=Label(root, text="Welcome to the new version of Bookshop :)", padx=20, pady=40, fg="red", bg="yellow")
