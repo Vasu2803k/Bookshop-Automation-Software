@@ -14,7 +14,7 @@ various books.
 from tkinter import *
 from tkinter import messagebox
 from tkinter.font import BOLD
-from PIL import ImageTk,Image
+from PIL import ImageTk,Image, ImageSequence
 import time
 
 # main window
@@ -115,11 +115,38 @@ def check_availability():
 
 
     #curr_name=input_name.get()
+def play_gif():
+    global loaded_img
+    global root4
+    load_gif=Label(root4)
+    load_gif.grid(row=2,column=0,padx=10)
+    img=Image.open('D:/Project_1/Images_Icons/Curve-Loading.gif')
+    count=0
+    for img in ImageSequence.Iterator(img):
+        img=img.resize((150,150))
+        loaded_img=ImageTk.PhotoImage(img)
+        load_gif.config(image=loaded_img)
+        load_gif.update()
+        count+=1
+        if(count==20):
+            break
+        time.sleep(0.00001)
+                
+    if(count!=20):
+        load_gif.after(0,play_gif)
+        
+    else:
+        load_gif.destroy()
+    #Text_frame=Label(root4, text="Results are ",padx=40,pady=20,bg="ivory3",relief=SUNKEN)
+    #Text_frame.grid(row=2,column=0,padx=10)
+    
+
+    
     
 def database_window():
 
-    
-    global loading_img
+    global root4
+    global loaded_img
     global curr_name
     global database_img
     root4=Toplevel()
@@ -144,21 +171,27 @@ def database_window():
 
 
     
-    input_frame=LabelFrame(root4, text="You searched for:) ",padx=40,pady=20,bg="ivory3",relief=SUNKEN)
-    input_frame.grid(row=1,column=0,padx=15)
+    input_frame=LabelFrame(root4, text="Entered Input",padx=40,pady=20,bg="ivory3",relief=SUNKEN)
+    input_frame.grid(row=1,column=0,padx=20)
+
+    text_widget=Text(input_frame,width=30,height=2,fg="green")
+    text_widget.pack(side=LEFT)
+    searched_for=curr_name
+    text_widget.insert(END,searched_for)
 
     #input frame
-    input_show=Label(input_frame, text=curr_name.title(), padx=20,pady=15,relief=SUNKEN)
-    input_show.grid(row=0,column=0,padx=92)
+    #input_show=Label(input_frame, text=curr_name.title(), padx=121,pady=15,relief=SUNKEN)
+    #input_show.grid(row=0,column=0)
     # image widget
-    #loading_img=ImageTk.PhotoImage(Image.open('D:\Project_1\Images_Icons\img4.jpg'))
+   
     
-    #load_gif=Label(root4,image=loading_img)
-    #load_gif.grid(row=2,column=0,padx=10)
 
     # back button
-    back1=Button(root4, text=" BACK TO EXPLORE ", bg="orange", padx=30, pady=10, bd=10,relief=SUNKEN, command=root4.destroy)
+    back1=Button(root4, text=" BACK TO EXPLORE ", bg="orange", padx=50, pady=10, bd=10,relief=SUNKEN, command=root4.destroy)
     back1.grid(row=2,column=1)
+    
+    play_gif()
+    
     # check in database
     
 
@@ -172,6 +205,7 @@ def enter_button():
         messagebox.showwarning(" ALERT!","Input the thing you are looking for :) ")
     else:
         input_name.delete(0, END)
+
         database_window()
     
     
