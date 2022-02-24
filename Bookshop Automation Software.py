@@ -15,12 +15,12 @@ from tkinter import *
 from tkinter import messagebox
 from tkinter.font import BOLD
 from PIL import ImageTk,Image
-
+import time
 
 # main window
 root=Tk()
 # changing the colour of main window
-root.configure(bg="lightpink")
+root.configure(bg="lightcyan")
 
 
 def main_window():
@@ -30,12 +30,12 @@ def main_window():
     # Geometry or dimensions of root Window
     root.geometry('800x680')
     # Displaying Icon
-    root.iconbitmap('D:\SDE\Py\Bookshop_icon_2.ico')
+    root.iconbitmap('D:\Project_1\Images_Icons\Bookshop_icon_2.ico')
     
     # Create Image Widget
-    Bookshop_img=ImageTk.PhotoImage(Image.open("D:/SDE/Py/Images/Bookshop_img.png"))
+    Bookshop_img=ImageTk.PhotoImage(Image.open("D:\Project_1\Images_Icons\Bookshop_img.png"))
     # text label-Shop name
-    text_label=Label(root,text="VS Software",font=('Helvatical bold',50),relief=SUNKEN,bg='ivory3')
+    text_label=Label(root,text="VS Book Store",font=('Helvatical bold',50),relief=SUNKEN,bg='ivory3')
     text_label.grid(row=0,column=0,columnspan=3,sticky=W+E,padx=20)
     # Image label
     Bookshop_img_label=Label(root,image=Bookshop_img,anchor=CENTER, relief=SUNKEN,bd=10).grid(row=1,column=1,padx=10,pady=60) 
@@ -76,11 +76,12 @@ def check_availability():
     # title
     root2.title("BOOKSHOP AUTOMATION SYSTEM")
     # colour
-    root2.configure(bg="lightpink")
+    root2.configure(bg="lightcyan")
+    root2.iconbitmap('D:\Project_1\Images_Icons\Bookshop_icon_2.ico')
     # Create Image Widget
-    Bookshop_img=ImageTk.PhotoImage(Image.open("D:/SDE/Py/Images/Bookshop_img.png"))
+    Bookshop_img=ImageTk.PhotoImage(Image.open("D:\Project_1\Images_Icons\Bookshop_img.png"))
     # text label-Shop name
-    text_label=Label(root2,text="VS Software",font=('Helvatical bold',50),relief=SUNKEN,bg='ivory3')
+    text_label=Label(root2,text="VS Book Store",font=('Helvatical bold',50),relief=SUNKEN,bg='ivory3')
     text_label.grid(row=0,column=0,columnspan=3,sticky=W+E,padx=20)
     # Image label
     Bookshop_img_label=Label(root2,image=Bookshop_img,anchor=CENTER, relief=SUNKEN,bd=10).grid(row=1,column=1,padx=10,pady=50) 
@@ -118,14 +119,14 @@ def check_availability():
 def database_window():
 
     
-    
+    global loading_img
     global curr_name
     global database_img
     root4=Toplevel()
     # Geometry or dimensions of root Window
     root4.geometry('800x680')
     # Displaying Icon
-    root4.iconbitmap('D:\SDE\Py\Bookshop_icon_2.ico')
+    root4.iconbitmap('D:\Project_1\Images_Icons\\Bookshop_icon_2.ico')
     # title
     root4.title("BOOKSHOP AUTOMATION SYSTEM")
     # colour
@@ -133,9 +134,9 @@ def database_window():
     
     
     # Create Image Widget
-    database_img=ImageTk.PhotoImage(Image.open('D:\SDE\Py\Images\database_img.png'))
+    database_img=ImageTk.PhotoImage(Image.open('D:\Project_1\Images_Icons\database_img.png'))
     # text label-Shop name
-    text_label=Label(root4,text="VS Software",font=('Helvatical bold',50),relief=SUNKEN,bg='lightblue')
+    text_label=Label(root4,text="VS Book Store",font=('Helvatical bold',50),relief=SUNKEN,bg='lightblue')
     text_label.grid(row=0,column=0,columnspan=5,sticky=W+E,padx=10)
 
     # Image label
@@ -143,20 +144,23 @@ def database_window():
 
 
     
-    input_frame=LabelFrame(root4, text="Entered Input",padx=40,pady=20,bg="ivory3",relief=SUNKEN)
-    input_frame.grid(row=1,column=0,padx=20)
+    input_frame=LabelFrame(root4, text="You searched for:) ",padx=40,pady=20,bg="ivory3",relief=SUNKEN)
+    input_frame.grid(row=1,column=0,padx=15)
 
     #input frame
-    input_show=Label(input_frame, text=curr_name.title(), padx=121,pady=15,relief=SUNKEN)
-    input_show.grid(row=0,column=0)
-
-    load_gif=Label(root4, text=" Loading, Please Wait :)", padx=50, pady=10 ,bg="yellow",relief=SUNKEN,bd=10)
-    load_gif.grid(row=2,column=0,padx=10)
+    input_show=Label(input_frame, text=curr_name.title(), padx=20,pady=15,relief=SUNKEN)
+    input_show.grid(row=0,column=0,padx=92)
+    # image widget
+    #loading_img=ImageTk.PhotoImage(Image.open('D:\Project_1\Images_Icons\img4.jpg'))
+    
+    #load_gif=Label(root4,image=loading_img)
+    #load_gif.grid(row=2,column=0,padx=10)
 
     # back button
-    back1=Button(root4, text=" BACK TO EXPLORE ", bg="orange", padx=50, pady=10, bd=10,relief=SUNKEN, command=root4.destroy)
+    back1=Button(root4, text=" BACK TO EXPLORE ", bg="orange", padx=30, pady=10, bd=10,relief=SUNKEN, command=root4.destroy)
     back1.grid(row=2,column=1)
     # check in database
+    
 
 
 def enter_button():
@@ -164,7 +168,7 @@ def enter_button():
     global curr_name
     
     curr_name=input_name.get()
-    if(curr_name=='' or curr_name==' '):
+    if(curr_name=="" or curr_name==" "):
         messagebox.showwarning(" ALERT!","Input the thing you are looking for :) ")
     else:
         input_name.delete(0, END)
@@ -177,7 +181,21 @@ def clear_button():
 
     
 def exit_button():
+    #yes_no messagebox
+    yes_no=messagebox.askyesno("Warning ","Do you really want to exit? ")
+    global root2
+    if(yes_no==1):
+        
+        root2.destroy()
+        
+    elif(yes_no==0):
+        return
+
+
+   
     
+def quit_func():
+    global root2
     root3=Toplevel()
     root3.title("BOOKSHOP AUTOMATION SYSTEM")
     # Geometry or dimensions of root Window
@@ -186,18 +204,13 @@ def exit_button():
     root3.iconbitmap('D:\SDE\Py\Bookshop_icon_2.ico')
     # changing the colour of window
     root3.configure(bg="lightpink")
-
+    
     close_label=Label(root3, text="Thanks!, visit again:) ",padx=50,pady=50,relief=SUNKEN,bg="ivory3",font=("Times new roman",14,BOLD))
     close_label.pack()
     
-    clear1=Button(root3, text=" CLEAR ", bg="red", padx=60, pady=25, bd=10,relief=SUNKEN, command=root2.destroy)
-    clear1.pack(pady=5)
-
-    # back button
-    back1=Button(root3, text=" BACK TO EXPLORE ", bg="orange", padx=60, pady=25, bd=10,relief=SUNKEN, command=root3.destroy)
-    back1.pack(pady=5)
     
-
+    #root2.destroy()
+    
 
  
 def user():
