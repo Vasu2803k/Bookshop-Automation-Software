@@ -1,5 +1,5 @@
 # Bookshop-Automation-Software
-Collaborative Project of 2 peer students from IIT Kharagpur
+
 
 '''
 The Bookshop Automation Software (BAS) is to automate all operations in a bookshop.
