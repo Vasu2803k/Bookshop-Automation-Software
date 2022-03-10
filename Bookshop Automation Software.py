@@ -11,31 +11,30 @@ various books.
 '''
 
 
+from datetime import datetime
 from tkinter import *
+from tkinter import simpledialog
 from tkinter import messagebox
 from tkinter.font import BOLD
 from PIL import ImageTk,Image, ImageSequence
 import time
-from click import command
 import mysql
 import mysql.connector as connector
-from soupsieve import select
-
 
 
 # create a database or connect to one 
-connection=connector.connect(host="localhost",user="root", passwd="V@su#1528k",database="Bookshop_database")
+connection=connector.connect(host="localhost",
+   user="root",
+   passwd="very_strong_password",
+   auth_plugin='mysql_native_password',database="Bookshop_database")
 
 #create cursor 
 
 cursor=connection.cursor() 
 #cursor.execute("CREATE TABLE vs_members( emp_id int,username varchar(40), password varchar(15), PRIMARY KEY (emp_id));" )
 
-
-
-
-# do the related stuff
-#cursor.execute("ALTER TABLE vs_members add Employee_Type varchar(40);"
+# Do the related stuff
+#cursor.execute("ALTER TABLE vs_members add Employee_Type varchar(40);")
 
 def root_access():
     global rootaccess
@@ -70,11 +69,13 @@ def root_access():
     
     VS_button=Button(rootaccess,text="VS Member",relief=SUNKEN,bg="lightgreen",command=VS_Member, anchor=CENTER,padx=28,pady=9,font=(("Times New Roman",15)),borderwidth=5)
     VS_button.place(x=230,y=480)
+
     customer_button=Button(rootaccess,text="Customer",relief=SUNKEN,bg="lightgreen",command=customer,anchor=CENTER,padx=36,pady=9,font=(("Times New Roman",15)),borderwidth=5)
     customer_button.place(x=405,y=480)
 
     Status_bar=Label(rootaccess,text="WELCOME TO THE NEW VERSION OF BOOKSTORE",anchor=CENTER,padx=50,font=(("Helvetica",20)),bg="orange",fg="darkblue")
     Status_bar.place(x=10,y=630)
+
     Logout_button=Button(rootaccess,text="LOGOUT",relief=SUNKEN,bg="red",command=rootaccess.quit, anchor=CENTER,padx=30,pady=10,font=(("Times New Roman",15)),borderwidth=5)
     Logout_button.place(x=335,y=550)
 
@@ -82,7 +83,9 @@ def enter_button():
     global name_entry
     global contact_entry
     global address_entry
+
     res = (any((ord(ele)>=65 and ord(ele)<=90) or (ord(ele)>=97 and ord(ele)<=122) for ele in contact_entry.get()))
+
     if(name_entry.get()=="" or name_entry.get()==" " or len(name_entry.get())<7):
         messagebox.showwarning(" ALERT!","Input your name and proceed (Atleast 7 letters):) ")
         name_entry.delete(0, END)
@@ -102,17 +105,19 @@ def enter_button():
     else:
         books()
 
-    
-        
-     
+
+
 def customer_window():
+
     global rootaccess
     rootaccess.destroy()
+
     global root
     global Bookshop_img
     global name_entry
     global contact_entry
     global address_entry
+
     # main window
     root=Tk()
     
@@ -136,8 +141,10 @@ def customer_window():
     
     Bookshop_frame1=LabelFrame(root,text="Bookshop Automation Software :)",relief=SUNKEN)
     Bookshop_frame1.grid(row=1,column=0,padx=5)
+
     Bookshop_label1=Label(Bookshop_frame1, text="Explore the world's knowledge", padx=20, pady=20, fg="darkred",bg="lightgreen").pack()
     Bookshop_frame2=LabelFrame(root,text="Bookshop Automation Software :)",relief=SUNKEN)
+
     Bookshop_frame2.grid(row=1,column=3,padx=5)
     Bookshop_label2=Label(Bookshop_frame2, text="Explore today, discover tomorrow", padx=10, pady=20, fg="darkred",bg="lightgreen").pack()
     # Image label
@@ -157,10 +164,8 @@ def customer_window():
     contact_entry.grid(row=3,column=0,columnspan=4,padx=125)
     address_entry=Entry(root,width=90,borderwidth=2)
     address_entry.grid(row=4,column=0,columnspan=4,padx=125)
-    
     enter_button1=Button(root, text="ENTER",bd=10, padx=40, pady=10, bg="green",command=enter_button)
     enter_button1.place(x=350,y=600)
-
 
 def reading_gif():
     global loaded_img
@@ -169,7 +174,6 @@ def reading_gif():
     load_gif=Label(gif_display,bg="ivory3")
     load_gif.pack(padx=20,pady=20)
     img=Image.open('D:/Project_1/Images_Icons/reading_gif.gif')
-    
     
     for img in ImageSequence.Iterator(img):
         try:
@@ -184,36 +188,37 @@ def reading_gif():
             pass
     else:
         gif_display.destroy()
+
 def add_to_cart(isbn_no,title,author,price):
     global name_entry
-    global entry_number
-    no_of_books=entry_number.get()
-    
+
+    books_quantity=simpledialog.askinteger("Input:)","Enter the number of books on your selection of purchase")
     cust_name=name_entry.get()
+    sql_query="INSERT INTO cart(customer_name,isbn_no,title,author,no_of_books,sell_price) VALUES(%s,%s,%s,%s,%s,%s)"
 
-    sql_query="INSERT INTO cart( customer_name,isbn_no, title ,author , no_of_books,sell_price ) VALUES(%s,%s,%s,%s,%s,%s);"
-
-    cursor.execute(sql_query,(cust_name,isbn_no,title,author,no_of_books,price,))
+    cursor.execute(sql_query,(cust_name,isbn_no,title,author,books_quantity,price,))
+    
 
 def cart_win():
     global checkout_frame
     cart_window=Tk()
     cart_window.title("Cart")
     cart_window.configure(bg="orange")
-    checkout_frame=Frame(root1,padx=5,pady=5,bg="coral")
 
+    checkout_frame=Frame(root1,padx=5,pady=5,bg="coral")
     checkout_frame.place(x=0,y=280,height=350,width=280)
+
     # Geometry or dimensions of root Window
     cart_window.geometry('500x500')
     # Displaying Icon
     cart_window.iconbitmap('D:\Project_1\Images_Icons\Bookshop_icon_2.ico')
-    
     
 def search_author():
     global author_or_book_entry
     global entry_number
     global books_frame
     global gif_display
+
     gif_display=Toplevel()
     gif_display.title("Reading gif:)")
     # changing the colour of main window
@@ -225,129 +230,129 @@ def search_author():
     gif_display.iconbitmap('D:\Project_1\Images_Icons\Bookshop_icon_2.ico')
     
     reading_gif()
-    ISBN_label=Label(books_frame,text="ISBN",font=("Helvetica",10),relief=SUNKEN,borderwidth=3,padx=40,anchor=CENTER,bg="violet")
+    clear_func1()
+
+    ISBN_label=Label(books_frame,text="ISBN",font=("Helvetica",10),relief=SUNKEN,borderwidth=3,padx=47,anchor=CENTER,bg="violet")
     ISBN_label.place(x=5,y=5)
     title_author_label=Label(books_frame,text="Title | Author",font=("Helvetica",10),relief=SUNKEN,borderwidth=3,padx=50,bg="violet")
-    title_author_label.place(x=135,y=5)
-    quantity_label=Label(books_frame,text="N_Books",font=("Helvetica",10),relief=SUNKEN,borderwidth=3,padx=4,bg="violet")
-    quantity_label.place(x=345,y=5)
+    title_author_label.place(x=145,y=5)
+    quantity_label=Label(books_frame,text="N_Books",font=("Helvetica",10),relief=SUNKEN,borderwidth=3,padx=8,bg="violet")
+    quantity_label.place(x=360,y=5)
     Rack_label=Label(books_frame,text="Rack No",font=("Helvetica",10),relief=SUNKEN,borderwidth=3,padx=12,bg="violet")
-    Rack_label.place(x=430,y=5)
-    price_label=Label(books_frame,text="Price",font=("Helvetica",10),relief=SUNKEN,borderwidth=3,padx=15,bg="violet")
-    price_label.place(x=523,y=5)
-    #entry=Entry(books_frame,width=5, borderwidth=5)
-    #entry.place(x=600,y=5)
-    entry_label=Label(books_frame,text="No_books",font=("Helvetica",10),relief=SUNKEN,borderwidth=3,bg="violet")
-    entry_label.place(x=610,y=5)
-    #buy_button=Button(books_frame,text="Add to cart",font=("Helvetica",10),relief=SUNKEN,borderwidth=3,padx=5)
-    #buy_button.place(x=670,y=5)
+    Rack_label.place(x=455,y=5)
+    price_label=Label(books_frame,text="Price",font=("Helvetica",10),relief=SUNKEN,borderwidth=3,padx=32,bg="violet")
+    price_label.place(x=562,y=5)
     buy_label=Label(books_frame,text="Add to cart",font=("Helvetica",10),relief=SUNKEN,borderwidth=3,padx=5,bg="violet")
-    buy_label.place(x=695,y=5)
+    buy_label.place(x=675,y=5)
+
     query="SELECT author_name FROM inventory;"
     cursor.execute(query)
     author_list=cursor.fetchall()
+
     global books_details1
     result_title=""
     for book1 in author_list:
-        if (author_or_book_entry.get() in book1[0]):
+        if (author_or_book_entry.get().lower() in book1[0].lower() ):
             result_title=book1[0]
             sql_query="SELECT * FROM inventory WHERE author_name=(%s)"
             cursor.execute(sql_query,(result_title,))
             books_details1=cursor.fetchall()
+            break
+    else:
+        messagebox.showerror("Error", "No books found using this keyword, modify the text or Use other keywords.")
+        author_or_book_entry.delete(0,END)
+        clear_func1()
 
-    sql_query="SELECT * FROM inventory;"
-    cursor.execute(sql_query)
-    books_details1=cursor.fetchall()
-
-    size=0
-    for book in books_details1:
-        ISBN_label1=Label(books_frame,text=book[0],font=("Helvetica",9),relief=SUNKEN,borderwidth=3,anchor=CENTER,bg="coral")
-        ISBN_label1.place(x=5,y=60+size)
-        title_author_label1=Label(books_frame,text=f"{book[1]}\n{book[2]}",font=("Helvetica",9),bg="coral")
-        title_author_label1.place(x=140,y=60+size)
-        quantity_label1=Label(books_frame,text=book[4],font=("Helvetica",9),relief=SUNKEN,borderwidth=3,padx=4,bg="coral")
-        quantity_label1.place(x=360,y=60+size)
-        Rack_label1=Label(books_frame,text=book[5],font=("Helvetica",9),relief=SUNKEN,borderwidth=3,padx=12,bg="coral")
-        Rack_label1.place(x=445,y=60+size)
-        price_label1=Label(books_frame,text=book[6],font=("Helvetica",9),relief=SUNKEN,borderwidth=3,padx=15,bg="coral")
-        price_label1.place(x=525,y=60+size)
-        entry_number=Entry(books_frame,width=5, borderwidth=5)
-        entry_number.place(x=630,y=60+size)
-        
-        buy_button1=Button(books_frame,text=" BUY ",font=("Helvetica",9),relief=SUNKEN,borderwidth=3,padx=5,bg="green",command=lambda: add_to_cart(book[0],book[1],book[2],book[6]))
-        buy_button1.place(x=715,y=60+size)
-        size+=50
     
-
+    if(author_or_book_entry.get()):
+        author_or_book_entry.delete(0,END)
+        size=0
+        for book in books_details1:
+            ISBN_label1=Label(books_frame,text=book[0],font=("Helvetica",9),relief=SUNKEN,borderwidth=3,anchor=CENTER,bg="coral")
+            ISBN_label1.place(x=12,y=60+size)
+            title_author_label1=Label(books_frame,text=f"{book[1]}\n{book[2]}",font=("Helvetica",9),bg="coral")
+            title_author_label1.place(x=165,y=60+size)
+            quantity_label1=Label(books_frame,text=book[4],font=("Helvetica",9),relief=SUNKEN,borderwidth=3,padx=4,bg="coral")
+            quantity_label1.place(x=385,y=60+size)
+            Rack_label1=Label(books_frame,text=book[5],font=("Helvetica",9),relief=SUNKEN,borderwidth=3,padx=12,bg="coral")
+            Rack_label1.place(x=470,y=60+size)
+            price_label1=Label(books_frame,text=book[6],font=("Helvetica",9),relief=SUNKEN,borderwidth=3,padx=15,bg="coral")
+            price_label1.place(x=580,y=60+size)
+            
+        
+            buy_button1=Button(books_frame,text=" BUY ",font=("Helvetica",9),relief=SUNKEN,borderwidth=3,padx=5,bg="green",command=lambda: add_to_cart(book[0],book[1],book[2],book[6]))
+            buy_button1.place(x=692,y=60+size)
+        
+            size+=55
+    
 
 def search_book():
     global author_or_book_entry
     global entry_number
     global books_frame
     global gif_display
-    
+    global books_details
     gif_display=Toplevel()
     gif_display.title("Reading gif:)")
     # changing the colour of main window
     gif_display.configure(bg="orange")
-
     # Geometry or dimensions of root Window
     gif_display.geometry('800x400')
     # Displaying Icon
     gif_display.iconbitmap('D:\Project_1\Images_Icons\Bookshop_icon_2.ico')
+
     reading_gif()
-    ISBN_label=Label(books_frame,text="ISBN",font=("Helvetica",10),relief=SUNKEN,borderwidth=3,padx=40,anchor=CENTER,bg="violet")
+    clear_func1()
+    
+    ISBN_label=Label(books_frame,text="ISBN",font=("Helvetica",10),relief=SUNKEN,borderwidth=3,padx=47,anchor=CENTER,bg="violet")
     ISBN_label.place(x=5,y=5)
     title_author_label=Label(books_frame,text="Title | Author",font=("Helvetica",10),relief=SUNKEN,borderwidth=3,padx=50,bg="violet")
-    title_author_label.place(x=135,y=5)
-    quantity_label=Label(books_frame,text="N_Books",font=("Helvetica",10),relief=SUNKEN,borderwidth=3,padx=4,bg="violet")
-    quantity_label.place(x=345,y=5)
+    title_author_label.place(x=145,y=5)
+    quantity_label=Label(books_frame,text="N_Books",font=("Helvetica",10),relief=SUNKEN,borderwidth=3,padx=8,bg="violet")
+    quantity_label.place(x=360,y=5)
     Rack_label=Label(books_frame,text="Rack No",font=("Helvetica",10),relief=SUNKEN,borderwidth=3,padx=12,bg="violet")
-    Rack_label.place(x=430,y=5)
-    price_label=Label(books_frame,text="Price",font=("Helvetica",10),relief=SUNKEN,borderwidth=3,padx=15,bg="violet")
-    price_label.place(x=523,y=5)
-    #entry=Entry(books_frame,width=5, borderwidth=5)
-    #entry.place(x=600,y=5)
-    entry_label=Label(books_frame,text="No_books",font=("Helvetica",10),relief=SUNKEN,borderwidth=3,bg="violet")
-    entry_label.place(x=610,y=5)
-    #buy_button=Button(books_frame,text="Add to cart",font=("Helvetica",10),relief=SUNKEN,borderwidth=3,padx=5)
-    #buy_button.place(x=670,y=5)
+    Rack_label.place(x=455,y=5)
+    price_label=Label(books_frame,text="Price",font=("Helvetica",10),relief=SUNKEN,borderwidth=3,padx=32,bg="violet")
+    price_label.place(x=562,y=5)
     buy_label=Label(books_frame,text="Add to cart",font=("Helvetica",10),relief=SUNKEN,borderwidth=3,padx=5,bg="violet")
-    buy_label.place(x=695,y=5)
+    buy_label.place(x=675,y=5)
     query="SELECT title FROM inventory"
 
     cursor.execute(query)
     book_list=cursor.fetchall()
     
-    global books_details
+    books_details=[]
     result_title=""
     for book1 in book_list:
-        if author_or_book_entry.get() in book1[0]:
+        if author_or_book_entry.get().lower() in book1[0].lower():
             result_title=book1[0]
             sql_query="SELECT * FROM inventory WHERE title=(%s)"
             cursor.execute(sql_query,(result_title,))
             books_details=cursor.fetchall()
-
-    size=0
-    for book in books_details:
-        ISBN_label1=Label(books_frame,text=book[0],font=("Helvetica",9),relief=SUNKEN,borderwidth=3,anchor=CENTER,bg="coral")
-        ISBN_label1.place(x=5,y=60+size)
-        title_author_label1=Label(books_frame,text=f"{book[1]}\n{book[2]}",font=("Helvetica",9),bg="coral")
-        title_author_label1.place(x=140,y=60+size)
-        quantity_label1=Label(books_frame,text=book[4],font=("Helvetica",9),relief=SUNKEN,borderwidth=3,padx=4,bg="coral")
-        quantity_label1.place(x=360,y=60+size)
-        Rack_label1=Label(books_frame,text=book[5],font=("Helvetica",9),relief=SUNKEN,borderwidth=3,padx=12,bg="coral")
-        Rack_label1.place(x=445,y=60+size)
-        price_label1=Label(books_frame,text=book[6],font=("Helvetica",9),relief=SUNKEN,borderwidth=3,padx=15,bg="coral")
-        price_label1.place(x=525,y=60+size)
-        entry_number=Entry(books_frame,width=5, borderwidth=5)
-        entry_number.place(x=630,y=60+size)
+            break
+    else:
+        messagebox.showerror("Error", "No books found using this keyword, modify the text or Use other keywords.")
+        author_or_book_entry.delete(0,END)
+        clear_func1()
+    if(author_or_book_entry.get()):
+        size=0
+        for book in books_details:
+            ISBN_label1=Label(books_frame,text=book[0],font=("Helvetica",9),relief=SUNKEN,borderwidth=3,anchor=CENTER,bg="coral")
+            ISBN_label1.place(x=12,y=60+size)
+            title_author_label1=Label(books_frame,text=f"{book[1]}\n{book[2]}",font=("Helvetica",9),bg="coral")
+            title_author_label1.place(x=165,y=60+size)
+            quantity_label1=Label(books_frame,text=book[4],font=("Helvetica",9),relief=SUNKEN,borderwidth=3,padx=4,bg="coral")
+            quantity_label1.place(x=385,y=60+size)
+            Rack_label1=Label(books_frame,text=book[5],font=("Helvetica",9),relief=SUNKEN,borderwidth=3,padx=12,bg="coral")
+            Rack_label1.place(x=470,y=60+size)
+            price_label1=Label(books_frame,text=book[6],font=("Helvetica",9),relief=SUNKEN,borderwidth=3,padx=15,bg="coral")
+            price_label1.place(x=580,y=60+size)
+            
         
+            buy_button1=Button(books_frame,text=" BUY ",font=("Helvetica",9),relief=SUNKEN,borderwidth=3,padx=5,bg="green",command=lambda: add_to_cart(book[0],book[1],book[2],book[6]))
+            buy_button1.place(x=692,y=60+size)
         
-        buy_button1=Button(books_frame,text=" BUY ",font=("Helvetica",9),relief=SUNKEN,borderwidth=3,padx=5,bg="green",command=lambda: add_to_cart(book[0],book[1],book[2],book[6]))
-        buy_button1.place(x=715,y=60+size)
-        
-        size+=50
+            size+=55
     
 
 def Request_func():
