@@ -10,8 +10,7 @@ rough estimate regarding the current demand for different books. Also it maintai
 various books.
 '''
 
-
-from datetime import datetime
+from datetime import datetime,date
 from tkinter import *
 from tkinter import simpledialog
 from tkinter import messagebox
@@ -20,21 +19,20 @@ from PIL import ImageTk,Image, ImageSequence
 import time
 import mysql
 import mysql.connector as connector
+from mysql.connector import Error
 
 
 # create a database or connect to one 
-connection=connector.connect(host="localhost",
-   user="root",
-   passwd="very_strong_password",
-   auth_plugin='mysql_native_password',database="Bookshop_database")
+def create_connection(host_name,user_name,password,auth_plugin_name,database_name):
+    connection_temp=None
+    try:
+        connection_temp=connector.connect(host=host_name,user=user_name,
+                     passwd=password,auth_plugin=auth_plugin_name,database=database_name)
+        print("connection succeeded")
+    except Error as err:
+        print(f"Error: {err}")
+    return connection_temp
 
-#create cursor 
-
-cursor=connection.cursor() 
-#cursor.execute("CREATE TABLE vs_members( emp_id int,username varchar(40), password varchar(15), PRIMARY KEY (emp_id));" )
-
-# Do the related stuff
-#cursor.execute("ALTER TABLE vs_members add Employee_Type varchar(40);")
 
 def root_access():
     global rootaccess
@@ -76,9 +74,36 @@ def root_access():
     Status_bar=Label(rootaccess,text="WELCOME TO THE NEW VERSION OF BOOKSTORE",anchor=CENTER,padx=50,font=(("Helvetica",20)),bg="orange",fg="darkblue")
     Status_bar.place(x=10,y=630)
 
-    Logout_button=Button(rootaccess,text="LOGOUT",relief=SUNKEN,bg="red",command=rootaccess.quit, anchor=CENTER,padx=30,pady=10,font=(("Times New Roman",15)),borderwidth=5)
+    Logout_button=Button(rootaccess,text="LOGOUT",relief=SUNKEN,bg="red",command=exit_program, anchor=CENTER,padx=30,pady=10,font=(("Times New Roman",15)),borderwidth=5)
     Logout_button.place(x=335,y=550)
+    
+    
 
+def exit_program():
+
+    #yes_no messagebox
+    global rootaccess
+    yes_no=messagebox.askyesno("Warning! ","Do you really want to exit? ")
+    
+    if(yes_no):
+        exit()
+        rootaccess.quit()
+    else:
+        return
+    
+
+def customer_entry():
+    global name_entry
+    global contact_entry
+    global address_entry
+    global cursor
+    global connection
+    name=name_entry.get()
+    date_time=date.today()
+    sql_query="INSERT INTO customer_details(full_name,contact_number,address,time_date) values(%s,%s,%s,%s);"
+    cursor.execute(sql_query,(name,contact_entry.get(),address_entry.get(),date_time))
+    print(cursor.fetchall())
+    
 def enter_button():
     global name_entry
     global contact_entry
@@ -104,6 +129,7 @@ def enter_button():
         address_entry.delete(0, END)
     else:
         books()
+        customer_entry()
 
 
 
@@ -191,14 +217,15 @@ def reading_gif():
 
 def add_to_cart(isbn_no,title,author,price):
     global name_entry
-
+    global cursor
+    global connection
     books_quantity=simpledialog.askinteger("Input:)","Enter the number of books on your selection of purchase")
     cust_name=name_entry.get()
-    sql_query="INSERT INTO cart(customer_name,isbn_no,title,author,no_of_books,sell_price) VALUES(%s,%s,%s,%s,%s,%s)"
+    sql_query="INSERT INTO cart(customer_name,isbn_no,title,author,no_of_books,sell_price) VALUES(%s,%s,%s,%s,%s,%s);"
 
-    cursor.execute(sql_query,(cust_name,isbn_no,title,author,books_quantity,price,))
+    cursor.execute(sql_query,(cust_name,isbn_no,title,author,books_quantity,price))
     
-
+    print(cursor.fetchall())
 def cart_win():
     global checkout_frame
     cart_window=Tk()
@@ -215,10 +242,11 @@ def cart_win():
     
 def search_author():
     global author_or_book_entry
+    
     global entry_number
     global books_frame
     global gif_display
-
+    
     gif_display=Toplevel()
     gif_display.title("Reading gif:)")
     # changing the colour of main window
@@ -257,6 +285,7 @@ def search_author():
             sql_query="SELECT * FROM inventory WHERE author_name=(%s)"
             cursor.execute(sql_query,(result_title,))
             books_details1=cursor.fetchall()
+            print(books_details1)
             break
     else:
         messagebox.showerror("Error", "No books found using this keyword, modify the text or Use other keywords.")
@@ -285,13 +314,16 @@ def search_author():
         
             size+=55
     
-
+   
 def search_book():
+    
     global author_or_book_entry
     global entry_number
     global books_frame
     global gif_display
     global books_details
+    #global author_or_book_entry
+    
     gif_display=Toplevel()
     gif_display.title("Reading gif:)")
     # changing the colour of main window
@@ -320,6 +352,7 @@ def search_book():
 
     cursor.execute(query)
     book_list=cursor.fetchall()
+    print(book_list)
     
     books_details=[]
     result_title=""
@@ -353,10 +386,72 @@ def search_book():
             buy_button1.place(x=692,y=60+size)
         
             size+=55
+            
+def request_field():
+    global customer_name_entry
+    global contact_no_entry
+    global book_title_entry
+    global author_name_entry
+    global cursor
+    global connection
+    customer_name=customer_name_entry.get().title()
+    contact_no=contact_no_entry.get()
+    book_title=book_title_entry.get().title()
+    author_name=author_name_entry.get().title()
+    customer_name_entry.delete(0,END)
+    contact_no_entry.delete(0,END)
+    book_title_entry.delete(0,END)
+    author_name_entry.delete(0,END)
+    date_time=datetime.now()
+    now1=date_time.strftime('%Y-%M-%D %H:%M:%S')
     
+    sql_query="INSERT INTO request_field(date_time, customer_name, contact_number,book_title, book_author) values(%s,%s,%s,%s,%s)"
+    cursor.execute(sql_query,(now1,
+                              customer_name,contact_no,book_title,author_name))
+    print(cursor.fetchall())
+    return
+
 
 def Request_func():
-    return
+    global customer_name_entry
+    global contact_no_entry
+    global book_title_entry
+    global author_name_entry
+    
+    
+    
+    request_win=Tk()
+    request_win.configure(bg="orange")
+    request_win.geometry('600x500')
+    request_win.iconbitmap('D:\Project_1\Images_Icons\Bookshop_icon_2.ico')
+    
+    
+    text_label_access=Label(request_win,text="VS Book Store",font=('Helvatical bold',30),relief=SUNKEN,bg='ivory3',padx=120)
+    text_label_access.grid(row=0,column=0,columnspan=3,sticky=W+E,padx=40)
+    
+    request_win.title("Request Window | BOOKSHOP AUTOMATION SYSTEM")
+    
+    customer_name=Label(request_win,text="Name",relief=SUNKEN,padx=14,pady=5)
+    customer_name.place(x=5,y=150)
+    contact_no=Label(request_win,text="Contact",relief=SUNKEN,padx=9,pady=5)
+    contact_no.place(x=5,y=190)
+    book_title=Label(request_win,text="Title",relief=SUNKEN,padx=18,pady=5)
+    book_title.place(x=5,y=230)
+    author_name=Label(request_win,text="Author",relief=SUNKEN,padx=11,pady=5)
+    author_name.place(x=5,y=270)
+    
+    customer_name_entry=Entry(request_win,width=80,borderwidth=5)
+    customer_name_entry.place(x=80,y=150)
+    contact_no_entry=Entry(request_win,width=80,borderwidth=5)
+    contact_no_entry.place(x=80,y=190)
+    book_title_entry=Entry(request_win,width=80,borderwidth=5)
+    book_title_entry.place(x=80,y=230)
+    author_name_entry=Entry(request_win,width=80,borderwidth=5)
+    author_name_entry.place(x=80,y=270)
+    
+    
+    insert_button=Button(request_win,text="Submit",relief=SUNKEN,padx=15,pady=8,bd=5,bg="green",command=request_field)
+    insert_button.place(x=250,y=370)
 
 def clear_func1():
     global books_frame
@@ -401,8 +496,8 @@ def books():
     books_label.place(x=80,y=630)
 
     
-    request_label=Button(root1,text="Request for book",bg="green",relief=SUNKEN,padx=25,pady=5,borderwidth=10,command=Request_func)
-    request_label.place(x=530,y=200)
+    request_button=Button(root1,text="Request for book",bg="green",relief=SUNKEN,padx=25,pady=5,borderwidth=10,command=Request_func)
+    request_button.place(x=530,y=200)
 
     cart_label=Button(root1,text=" Show Cart ",padx=12,pady=10,font=("Helvetica",14),bg="green",relief=SUNKEN,borderwidth=5,command=cart_win)
     cart_label.place(x=580,y=630)
@@ -434,13 +529,13 @@ def VS_Member():
      # title
     VS_root.title("BOOKSHOP AUTOMATION SYSTEM")
 
-    sales_clerk_button=Button(VS_root,text="Sales Clerk",padx=8,pady=8,relief=SUNKEN,font=("Helvetica",14),bg="lightgreen",command=VS_access)
+    sales_clerk_button=Button(VS_root,text="Sales Clerk",padx=8,pady=8,relief=SUNKEN,font=("Helvetica",14),bg="lightgreen",command=lambda: VS_access("Sales Clerk"))
     sales_clerk_button.place(x=350,y=150)
-    employee_button=Button(VS_root,text="Employee",padx=15,pady=8,relief=SUNKEN,font=("Helvetica",14),bg="lightgreen",command=VS_access)
+    employee_button=Button(VS_root,text="Employee",padx=15,pady=8,relief=SUNKEN,font=("Helvetica",14),bg="lightgreen",command=lambda: VS_access("Employee"))
     employee_button.place(x=350,y=230)
-    manager_button=Button(VS_root,text="Manager",padx=21,pady=8,relief=SUNKEN,font=("Helvetica",14),bg="lightgreen",command=VS_access)
+    manager_button=Button(VS_root,text="Manager",padx=21,pady=8,relief=SUNKEN,font=("Helvetica",14),bg="lightgreen",command=lambda: VS_access("Manager"))
     manager_button.place(x=350,y=310)
-    Owner_button=Button(VS_root,text="Owner",padx=32,pady=8,relief=SUNKEN,font=("Helvetica",14),bg="lightgreen",command=VS_access)
+    Owner_button=Button(VS_root,text="Owner",padx=32,pady=8,relief=SUNKEN,font=("Helvetica",14),bg="lightgreen",command=lambda: VS_access("Owner"))
     Owner_button.place(x=350,y=390)
     
     main_window_button=Button(VS_root,text="Back to previous window/Page",padx=2,pady=8,relief=SUNKEN,font=("Helvetica",14),bg="green",command=VS_root.destroy)
@@ -482,77 +577,93 @@ def sales_window():
     items_list_button.place(x=50,y=50)
     print_button=Button(sales_win,text="Print Reciept", relief=SUNKEN,padx=20,pady=10,font=("Helvetica",14),bg="lightgreen",command=Checkout,state=DISABLED)
     print_button.place(x=50,y=150)
+    
+    
+def sales_clerk():
+    
+    sales_win=Toplevel()
+    # changing the colour of main window
+    sales_win.configure(bg="orange")
 
+
+    # Geometry or dimensions of root Window
+    sales_win.geometry('800x680')
+    # Displaying Icon
+    sales_win.iconbitmap('D:\Project_1\Images_Icons\Bookshop_icon_2.ico')
+    
+     # title
+    sales_win.title("Sales Clerk | BOOKSHOP AUTOMATION SYSTEM")
+    return
 
 def employee_window():
-    sales_win=Toplevel()
-    VS_access_window=Toplevel()
+    
+    employee_win=Toplevel()
     # changing the colour of main window
-    VS_access_window.configure(bg="orange")
+    employee_win.configure(bg="orange")
 
 
     # Geometry or dimensions of root Window
-    VS_access_window.geometry('800x680')
+    employee_window.geometry('800x680')
     # Displaying Icon
-    VS_access_window.iconbitmap('D:\Project_1\Images_Icons\Bookshop_icon_2.ico')
+    employee_win.iconbitmap('D:\Project_1\Images_Icons\Bookshop_icon_2.ico')
     
      # title
-    VS_access_window.title("BOOKSHOP AUTOMATION SYSTEM")
+    employee_win.title("Employee | BOOKSHOP AUTOMATION SYSTEM")
     return
 def manager_window():
-    sales_win=Toplevel()
-    VS_access_window=Toplevel()
+    
+    manager_win=Toplevel()
     # changing the colour of main window
-    VS_access_window.configure(bg="orange")
+    manager_win.configure(bg="orange")
 
 
     # Geometry or dimensions of root Window
-    VS_access_window.geometry('800x680')
+    manager_win.geometry('800x680')
     # Displaying Icon
-    VS_access_window.iconbitmap('D:\Project_1\Images_Icons\Bookshop_icon_2.ico')
+    manager_win.iconbitmap('D:\Project_1\Images_Icons\Bookshop_icon_2.ico')
     
      # title
-    VS_access_window.title("BOOKSHOP AUTOMATION SYSTEM")
+    manager_win.title("Manager | BOOKSHOP AUTOMATION SYSTEM")
     return
 def owner_window():
-    sales_win=Toplevel()
-    VS_access_window=Toplevel()
+    
+    owner_win=Toplevel()
     # changing the colour of main window
-    VS_access_window.configure(bg="orange")
+    owner_win.configure(bg="orange")
 
 
     # Geometry or dimensions of root Window
-    VS_access_window.geometry('800x680')
+    owner_win.geometry('800x680')
     # Displaying Icon
-    VS_access_window.iconbitmap('D:\Project_1\Images_Icons\Bookshop_icon_2.ico')
+    owner_win.iconbitmap('D:\Project_1\Images_Icons\Bookshop_icon_2.ico')
     
      # title
-    VS_access_window.title("BOOKSHOP AUTOMATION SYSTEM")
+    owner_win.title("Owner | BOOKSHOP AUTOMATION SYSTEM")
     return
 
 # checks whether data found or not
-def check():
+def check_vs_member(employee_type):
     global user_name_entry
     global password_entry
     
-    sql_query="SELECT username, password,employee_type FROM vs_members;"
+    sql_query="SELECT username, user_password,employee_type FROM vs_members;"
     cursor.execute(sql_query)
     users_list=cursor.fetchall()
     for user,passwd,emp_type in users_list:
-        if(user==user_name_entry.get() and passwd==password_entry.get()):
-            messagebox.showinfo("Access","Validation successful, Access granted!")
-            if(emp_type=="Sales Clerk"):
+        if(emp_type.lower()==employee_type.lower() and user.lower()==user_name_entry.get().lower() and passwd==password_entry.get()):
+            messagebox.showinfo("Access Granted","Validation successful, Access granted!")
+            if(emp_type.lower()=="Sales Clerk".lower()):
                 sales_window()
-            elif(emp_type=="Employee"):
+            elif(emp_type.lower()=="Employee".lower()):
                 employee_window()
-            elif(emp_type=="Manager"):
+            elif(emp_type.lower()=="Manager".lower()):
                 manager_window()
-            elif(emp_type=="Owner"):
+            elif(emp_type.lower()=="Owner".lower()):
                 owner_window()
             break
             
     else:
-        messagebox.showerror("Access","Sorry!,username or password is incorrect")
+        messagebox.askretrycancel("Access Denied","Sorry!,username or password is incorrect")
 
 
 def clear():
@@ -563,7 +674,7 @@ def clear():
     user_name_entry.delete(0,END)
 
 
-def VS_access():
+def VS_access(employee_type):
     
     global VS_access_window
     global password_entry
@@ -599,7 +710,8 @@ def VS_access():
     clear_button1=Button(VS_access_window, text="CLEAR",bd=10, padx=50, pady=10, bg="lightgreen",command=clear)
     clear_button1.place(x=180,y=600)
     # enter button
-    enter_button1=Button(VS_access_window, text="ENTER",bd=10, padx=50, pady=10, bg="lightgreen",command=check)
+    
+    enter_button1=Button(VS_access_window, text="ENTER",bd=10, padx=50, pady=10, bg="lightgreen",command=lambda: check_vs_member(employee_type))
     enter_button1.place(x=350,y=500)
     exit_button1=Button(VS_access_window ,text="EXIT",bd=10, padx=50, pady=10, bg="lightgreen",command=VS_access_window.destroy)
     exit_button1.place(x=520,y=600)
@@ -643,108 +755,38 @@ def play_gif():
         
     #else:
         #load_gif.destroy()  
-    
-    
-'''  
-def exit_access_window():
 
-    #yes_no messagebox
-    yes_no=messagebox.askyesno("Warning ","Do you really want to exit? ")
-    global VS_access_window
-    if(yes_no==1):
         
-        VS_access_window.destroy()
-        
-    elif(yes_no==0):
-        return
 
 
-   
+connection=create_connection('localhost','root','V@$u#1528','mysql_native_password','Bookshop_database')
+cursor=connection.cursor() 
+#cursor.execute("CREATE TABLE vs_members( emp_id int,username varchar(40), password varchar(15), PRIMARY KEY (emp_id));" )
 
-def quit_func():
-    global root2
-    root3=Toplevel()
-    root3.title("BOOKSHOP AUTOMATION SYSTEM")
-    # Geometry or dimensions of root Window
-    root3.geometry('300x300')
-    # Displaying Icon
-    root3.iconbitmap('D:\SDE\Py\Bookshop_icon_2.ico')
-    # changing the colour of window
-    root3.configure(bg="lightpink")
-    
-    close_label=Label(root3, text="Thanks!, visit again:) ",padx=50,pady=50,relief=SUNKEN,bg="ivory3",font=("Times new roman",14,BOLD))
-    close_label.pack()
-    
-
-def database_window():
-
-    global root4
-    global loaded_img
-    global curr_name
-    global database_img
-    root4=Toplevel()
-    # Geometry or dimensions of root Window
-    root4.geometry('800x680')
-    # Displaying Icon
-    root4.iconbitmap('D:\Project_1\Images_Icons\Bookshop_icon_2.ico')
-    # title
-    root4.title("BOOKSHOP AUTOMATION SYSTEM")
-    # colour
-    root4.configure(bg="orange")
- 
-    # Create Image Widget
-    database_img=ImageTk.PhotoImage(Image.open('D:\Project_1\Images_Icons\database_img.png'))
-
-    # text label-Shop name
-
-    text_label=Label(root4,text="VS Book Store",font=('Helvatical bold',50),relief=SUNKEN,bg='lightblue')
-    text_label.grid(row=0,column=0,columnspan=5,sticky=W+E,padx=10)
-
-    # Image label
-    database_image_label=Label(root4,image=database_img,relief=SUNKEN,bd=10).grid(row=1,column=1,padx=50,pady=50) 
-
-    input_frame=LabelFrame(root4, text="Entered Input",padx=40,pady=20,bg="ivory3",relief=SUNKEN)
-    input_frame.grid(row=1,column=0,padx=20)
-
-    text_widget=Text(input_frame,width=30,height=2,fg="green")
-    text_widget.pack(side=LEFT)
-
-    searched_for=curr_name
-    text_widget.insert(END,searched_for)
-
-    #input frame
-    #input_show=Label(input_frame, text=curr_name.title(), padx=121,pady=15,relief=SUNKEN)
-    #input_show.grid(row=0,column=0)
-    # image widget
-   
-    
-
-    # back button
-    back1=Button(root4, text=" BACK TO EXPLORE ", bg="orange", padx=50, pady=30, bd=10,relief=SUNKEN, command=root4.destroy)
-    back1.grid(row=2,column=1)
-    
-    play_gif()
-    
-    # check in database
-    
+# Do the related stuff
+#cursor.execute("ALTER TABLE vs_members add Employee_Type varchar(40);")
 
 
-    
-    #root2.destroy()
-    
+#Added
+
 '''
-
+doj=date.today()
+sql_query2="insert into vs_members values(103,'Dileep103',22,'Adilabad,Telangana',%s,'Dileep#103','Employee')"
+    
+cursor.execute(sql_query2,(doj,))
+'''
 
 root_access()
 
 #commit changes
 connection.commit()
-
-#close the connnection
 '''
-if connection and cursor:
-    cursor.close()
-    connection.close()
+def close_connection():
+    #close the connnection
+    if connection and cursor:
+        cursor.close()
+        connection.close()
+close_connection()
 '''
 rootaccess.mainloop()
 
