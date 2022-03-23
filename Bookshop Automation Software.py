@@ -542,7 +542,8 @@ def add_to_cart():
     
     # take isbn as input from customer
 
-    is_isbn=simpledialog.askstring("Input","Enter ISBN Number including hyphens(-)")
+    isbn=simpledialog.askstring("Input","Enter ISBN Number including hyphens(-)")
+    is_isbn=True
     while(is_isbn):
         if(isbn=="" or isbn==None or len(isbn)!=17):
             prompt_reply=messagebox.askretrycancel("Retry"," Wrong Input \nClick Retry to enter again or cancel to exit")
@@ -959,20 +960,20 @@ def Invoice():
     Invoice_win.title("Invoice | BOOKSHOP AUTOMATION SYSTEM")
 
     invoice_frame=Frame(Invoice_win,bg="white",borderwidth=2,relief=SUNKEN)
-    invoice_frame.place(x=250,y=5,height=650,width=350)
+    invoice_frame.place(x=150,y=5,height=650,width=450)
     invoice_frame.configure(bg="white")
     #store_text=Text(invoice_frame,)
     
     invoice_no=0
     store_text=f'''
-            VS BOOKSTORE
-        New Version of Bookshop
+                VS BOOKSTORE
+            New Version of Bookshop
 
- --------------------------------------------------------------
+ -------------------------------------------------------------------
 
         Invoice Number     :   {invoice_no}
 
- --------------------------------------------------------------
+ -------------------------------------------------------------------
         '''
     
     reciept_label=Label(invoice_frame,text=store_text,bg="white")
@@ -980,12 +981,14 @@ def Invoice():
     sql_query="SELECT customer_name,title,isbn_no,no_of_books,sell_price from cart ;"
     cursor.execute(sql_query)
     reciept_list=cursor.fetchall()
+
     customer_label=Label(invoice_frame,text=f"Name: {reciept_list[0][0]}\t\t\t",bg="white")
     customer_label.pack()
-    design_text="--------------------------------------------------------------"
+
+    design_text="----------------------------------------------------------------"
     design_label=Label(invoice_frame,text=design_text,bg="white")
     design_label.pack()
-    heading_label=Label(invoice_frame,text="\n    book_name\t\t  ISBN\t\t     Qty      Price\n",bg="white")
+    heading_label=Label(invoice_frame,text="\n book_name\t\t  ISBN\t\tQty\tPrice\n",bg="white")
     heading_label.pack()
     design_label=Label(invoice_frame,text=design_text,bg="white")
     design_label.pack()
@@ -998,7 +1001,7 @@ def Invoice():
         Qty=item[3]
         Price=item[4]
         
-        books_label=Label(invoice_frame,text=f"{book_name}\t{ISBN}      {Qty}       {Price}\n",bg="white")
+        books_label=Label(invoice_frame,text=f" {book_name} {ISBN}  {Qty}   {Price}\n",bg="white")
         books_label.pack()
         design_label=Label(invoice_frame,text=design_text,bg="white")
         design_label.pack()
@@ -1008,7 +1011,7 @@ def Invoice():
     paid_label=Label(invoice_frame,text="Paid:)",bg="white",font=("Times New Roman",12,'bold'))
     paid_label.pack()
     thanks_label=Label(invoice_frame,text="Thanks, Visit again:)",bg="white",font=("Times New Roman",12,'bold'))
-    thanks_label.place(x=110,y=520)
+    thanks_label.place(x=150,y=520)
     print_button=Button(Invoice_win,text="Confirm", relief=SUNKEN,borderwidth=7,pady=5,padx=5,font=("Helvetica",14),bg="green",command=message)
     print_button.place(x=650,y=600)
 
