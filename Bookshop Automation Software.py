@@ -23,11 +23,11 @@ from mysql.connector import Error
 
 
 # create a database or connect to one 
-def create_connection(host_name,user_name,password,auth_plugin_name,database_name):
+def create_connection(host_name,user_name,password,database_name):
     connection_temp=None
     try:
         connection_temp=connector.connect(host=host_name,user=user_name,
-                     passwd=password,auth_plugin=auth_plugin_name,database=database_name)
+                     passwd=password,database=database_name)
         print("connection succeeded")
     except Error as err:
         print(f"Error: {err}")
@@ -74,7 +74,7 @@ def root_access():
     Status_bar=Label(rootaccess,text="WELCOME TO THE NEW VERSION OF BOOKSTORE",anchor=CENTER,padx=50,font=(("Helvetica",20)),bg="orange",fg="darkblue")
     Status_bar.place(x=10,y=630)
 
-    Logout_button=Button(rootaccess,text="LOGOUT",relief=SUNKEN,bg="red",command=exit_program, anchor=CENTER,padx=30,pady=10,font=(("Times New Roman",15)),borderwidth=5)
+    Logout_button=Button(rootaccess,text="Logout",relief=SUNKEN,bg="red",command=exit_program, anchor=CENTER,padx=30,pady=10,font=(("Times New Roman",15)),borderwidth=5)
     Logout_button.place(x=335,y=550)
     
     
@@ -140,12 +140,16 @@ def check_vs_member(employee_type):
         if(emp_type.lower()==employee_type.lower() and user.lower()==user_name_entry.get().lower() and passwd==password_entry.get()):
             messagebox.showinfo("Access Granted","Validation successful, Access granted!")
             if(emp_type.lower()=="Sales Clerk".lower()):
+                VS_access_window.destroy()
                 sales_window()
             elif(emp_type.lower()=="Employee".lower()):
+                VS_access_window.destroy()
                 employee_window()
             elif(emp_type.lower()=="Manager".lower()):
+                VS_access_window.destroy()
                 manager_window()
             elif(emp_type.lower()=="Owner".lower()):
+                VS_access_window.destroy()
                 owner_window()
             break
     
@@ -212,8 +216,6 @@ def customer_window():
     global name_entry
     global contact_entry
     global address_entry
-    global customer_name
-    
     # main window
     root=Toplevel()
     
@@ -263,7 +265,7 @@ def customer_window():
     address_entry.grid(row=4,column=0,columnspan=4,padx=125)
     enter_button1=Button(root, text="ENTER",bd=10, padx=40, pady=10, bg="green",command=enter_button)
     enter_button1.place(x=350,y=600)
-    customer_name=name_entry.get()
+    
     
 
 
@@ -275,6 +277,7 @@ def customer_entry():
     date_time=date.today()
     sql_query="INSERT INTO customer_details(full_name,contact_number,address,time_date) values(%s,%s,%s,%s);"
     cursor.execute(sql_query,(name,contact_entry.get(),address_entry.get(),date_time))
+    print("customer details inserted")
     
     
 def enter_button():
@@ -358,10 +361,14 @@ def books():
     books_frame=Frame(root1,padx=5,pady=5,bg="coral")
     books_frame.place(x=0,y=270,height=360,width=800)
 
+    
+    #v.configure(command=books_frame.yview)
+
+
     clear_label=Button(root1,text="Clear Results",padx=9,pady=10,font=("Helvetica",14),bg="lightgreen",relief=SUNKEN,borderwidth=5,command=clear_func1)
     clear_label.place(x=80,y=630)
 
-    Logout_button=Button(root1,text="LOGOUT",relief=SUNKEN,bg="red",command=exit_program, anchor=CENTER,padx=30,pady=10,font=(("Times New Roman",14)),borderwidth=5)
+    Logout_button=Button(root1,text=" Back ",relief=SUNKEN,bg="red",command=root1.destroy, anchor=CENTER,padx=30,pady=10,font=(("Times New Roman",14)),borderwidth=5)
     Logout_button.place(x=330,y=630)
     
     
@@ -396,24 +403,35 @@ def search_author():
 
     reading_gif()
     clear_func1()
-
+    
     query="SELECT author_name FROM inventory;"
     cursor.execute(query)
     author_list=cursor.fetchall()
 
-    
+    list_len=len(author_list)
     result_title=""
     is_found=False
     if(author_or_book_entry.get()):
         for book1 in author_list:
-            if (author_or_book_entry.get().lower() in book1[0].lower() ):
+            if (author_or_book_entry.get().lower() in book1[0].lower() and (book!=author_list[list_len-1])):
                 is_found=True
                 result_title=book1[0]
                 sql_query="SELECT * FROM inventory WHERE author_name=(%s)"
                 cursor.execute(sql_query,(result_title,))
-                books_details1=cursor.fetchall()
-                print(books_details1)
+                book_details=cursor.fetchall()
+                books_details+=book_details
+            elif(author_or_book_entry.get().lower() in book1[0].lower() and (book==author_list[list_len-1])):
+                is_found=True
+                result_title=book1[0]
+                sql_query="SELECT * FROM inventory WHERE author_name=(%s)"
+                cursor.execute(sql_query,(result_title,))
+                book_details=cursor.fetchall()
+                books_details+=book_details
                 break
+            elif(book==author_list[list_len-1]):
+                break
+
+    
         else:
             not_found_label1=Label(books_frame,text="NOT FOUND i.e., NO DATA AVAILABLE",font=("Helvetica",12,"bold"),anchor=CENTER,bg="ivory3")
             not_found_label1.place(x=250,y=100)
@@ -435,14 +453,13 @@ def search_author():
             Rack_label1.place(x=470,y=60+size)
             price_label1=Label(books_frame,text=book[6],font=("Helvetica",9),relief=SUNKEN,borderwidth=3,padx=15,bg="coral")
             price_label1.place(x=580,y=60+size)
-            
-        
             button_dict=Button(books_frame,text=" BUY ",font=("Helvetica",9),relief=SUNKEN,borderwidth=3,padx=5,bg="green",command=add_to_cart)
             button_dict.place(x=692,y=60+size)
         
             size+=55
     
-    
+    v=Scrollbar(books_frame,orient=VERTICAL)
+    v.pack(side=RIGHT, fill=Y)
     
 def search_book():
     
@@ -455,26 +472,37 @@ def search_book():
     
     reading_gif()
     clear_func1()
+    
     query="SELECT title FROM inventory"
 
     cursor.execute(query)
     book_list=cursor.fetchall()
-    
+    list_len=len(book_list)
     print(book_list)
-
+    
     books_details=[]
     result_title=""
     is_found=False
     if(author_or_book_entry.get()):
         for book1 in book_list:
-            if author_or_book_entry.get().lower() in book1[0].lower():
+            if (author_or_book_entry.get().lower() in book1[0].lower() and (book1!=book_list[list_len-1])):
                 is_found=True
                 result_title=book1[0]
                 sql_query="SELECT * FROM inventory WHERE title=(%s)"
                 cursor.execute(sql_query,(result_title,))
-                books_details=cursor.fetchall()
+                book_details=cursor.fetchall()
+                books_details+=book_details
                 print(books_details)
-
+            elif(author_or_book_entry.get().lower() in book1[0].lower() and (book1==book_list[list_len-1])):
+                is_found=True
+                result_title=book1[0]
+                sql_query="SELECT * FROM inventory WHERE author_name=(%s)"
+                cursor.execute(sql_query,(result_title,))
+                book_details=cursor.fetchall()
+                books_details+=book_details
+                break
+            elif(book1==book_list[list_len-1]):
+                break
         else:
             not_found_label1=Label(books_frame,text="NOT FOUND i.e., NO DATA AVAILABLE",font=("Helvetica",12,"bold"),anchor=CENTER,bg="ivory3")
             not_found_label1.place(x=250,y=100)
@@ -485,6 +513,7 @@ def search_book():
     if(is_found):  
         size=0
         for book in books_details:
+        
             ISBN_label1=Label(books_frame,text=book[0],font=("Helvetica",9),relief=SUNKEN,borderwidth=3,anchor=CENTER,bg="coral")
             ISBN_label1.place(x=12,y=60+size)
             title_author_label1=Label(books_frame,text=f"{book[1]}\n{book[2]}",font=("Helvetica",9),bg="coral")
@@ -505,25 +534,27 @@ def search_book():
         not_found_label1=Label(books_frame,text="NOT FOUND i.e., NO DATA AVAILABLE",font=("Helvetica",12,"bold"),anchor=CENTER,bg="ivory3")
         not_found_label1.place(x=250,y=100)
     
-
+    v=Scrollbar(books_frame,orient=VERTICAL)
+    v.pack(side=RIGHT, fill=Y)
 def add_to_cart():
     global root
     cust_name=name_entry.get()
     
     # take isbn as input from customer
 
-    isbn=simpledialog.askstring("Input","Enter ISBN Number including hyphens(-)")
-    is_isbn=False
-    while(not is_isbn):
-        if(isbn=="" or len(isbn)!=17):
+    is_isbn=simpledialog.askstring("Input","Enter ISBN Number including hyphens(-)")
+    while(is_isbn):
+        if(isbn=="" or isbn==None or len(isbn)!=17):
             prompt_reply=messagebox.askretrycancel("Retry"," Wrong Input \nClick Retry to enter again or cancel to exit")
-            is_isbn=False
+            
             if(prompt_reply==True):
+                is_isbn=True
                 isbn=simpledialog.askstring("Input","Enter ISBN Number including hyphens(-)")
             else:
+                is_isbn=False
                 messagebox.showinfo("clear prompt", "Click ok to quit prompt")
         else:
-            is_isbn=True       
+            is_isbn=False       
             
             sql_query1="SELECT ISBN,title,author_name,rack_number, sell_price from inventory where ISBN=(%s);"
             cursor.execute(sql_query1,(isbn,))
@@ -781,21 +812,44 @@ def Checkout():
 
 def insert_statistics():
     global total_amount
-    date_time=datetime.now()
+    global name_entry
+    global contact_entry
+    global address_entry
+    date_time=date.today()
 
-    now1=date_time.strftime('%Y-%M-%D %H:%M:%S')
+    
     sql_query="SELECT customer_name,no_of_books from cart;"
 
     cursor.execute(sql_query)
     stats_list=cursor.fetchall()
+    print(stats_list)
     if(len(stats_list)>0):
+        print("stats updating")
         for stats in stats_list:
-            sql_query1="INSERT INTO sales_statistics values(%s,%s,%s,%s);"
-            cursor.execute(sql_query,(now1,stats[0],stats[1],total_amount))
-    
+            sql_query1="INSERT INTO sales_statistics values(%s,%s,%s,%s,%s,%s);"
+            cursor.execute(sql_query1,(date_time,stats[0],contact_entry.get(),address_entry.get(),stats[1],total_amount))
 
     
-    
+    print("stats updated")
+    update_inventory()
+
+def update_inventory():
+    query="SELECT isbn_no,no_of_books FROM cart;"
+    cursor.execute(query)
+    inv_list=cursor.fetchall()
+    if(len(inv_list)!=0):
+        print("updating inventory")
+        for item in inv_list:
+            sql_query="UPDATE INVENTORY SET quantity=quantity-(%s) where isbn=(%s);"
+            cursor.execute(sql_query,(item[1],item[0]))
+            print("updating.....")
+        else:
+            messagebox.showinfo("Info","Updated")
+
+    print("Updated after purchase")
+    # delete those with 0 quantity
+    sql_query2="DELETE FROM INVENTORY where quantity=0;"
+    cursor.execute(sql_query2)
     
 def payment():
     global total_amount
@@ -816,7 +870,6 @@ def payment():
     while(not is_paid):
         prompt_reply=messagebox.askyesnocancel("Pay?","Click 'YES' if paid or 'NO' if unpaid or 'Cancel' if unsure")
         if(prompt_reply==True):
-            
             is_paid=True
             insert_statistics()
         elif(prompt_reply==False):
@@ -837,8 +890,8 @@ def checkout_win():
     
     ISBN_label=Label(cart_frame,text="ISBN",font=("Helvetica",10),relief=SUNKEN,borderwidth=3,padx=47,anchor=CENTER,bg="violet")
     ISBN_label.place(x=5,y=5)
-    title_author_label=Label(cart_frame,text="Title | Author",font=("Helvetica",10),relief=SUNKEN,borderwidth=3,padx=50,bg="violet")
-    title_author_label.place(x=145,y=5)
+    title_author_label=Label(cart_frame,text="Title | Author",font=("Helvetica",10),relief=SUNKEN,borderwidth=3,padx=65,bg="violet")
+    title_author_label.place(x=143,y=5)
     quantity_label=Label(cart_frame,text="N_Books",font=("Helvetica",10),relief=SUNKEN,borderwidth=3,padx=8,bg="violet")
     quantity_label.place(x=360,y=5)
     Rack_label=Label(cart_frame,text="Rack No",font=("Helvetica",10),relief=SUNKEN,borderwidth=3,padx=12,bg="violet")
@@ -857,15 +910,15 @@ def checkout_win():
         proceed_but.place(x=380,y=575)
 
         for item in cart_list:
-            ISBN_label1=Label(cart_frame,text=item[0],font=("Helvetica",9),relief=SUNKEN,borderwidth=3,anchor=CENTER,bg="coral")
+            ISBN_label1=Label(cart_frame,text=item[0],font=("Helvetica",9),relief=SUNKEN,borderwidth=3,anchor=CENTER,bg="Ivory3")
             ISBN_label1.place(x=12,y=60+size)
-            title_author_label1=Label(cart_frame,text=f"{item[1]}\n{item[2]}",font=("Helvetica",9),bg="coral")
-            title_author_label1.place(x=165,y=60+size)
-            quantity_label1=Label(cart_frame,text=item[3],font=("Helvetica",9),relief=SUNKEN,borderwidth=3,padx=4,bg="coral")
+            title_author_label1=Label(cart_frame,text=f"{item[1]}\n{item[2]}",font=("Helvetica",9),bg="Ivory3")
+            title_author_label1.place(x=152,y=60+size)
+            quantity_label1=Label(cart_frame,text=item[3],font=("Helvetica",9),relief=SUNKEN,borderwidth=3,padx=4,bg="Ivory3")
             quantity_label1.place(x=385,y=60+size)
-            price_label1=Label(cart_frame,text=item[4],font=("Helvetica",9),relief=SUNKEN,borderwidth=3,padx=15,bg="coral")
+            price_label1=Label(cart_frame,text=item[4],font=("Helvetica",9),relief=SUNKEN,borderwidth=3,padx=15,bg="Ivory3")
             price_label1.place(x=475,y=60+size)
-            Rack_label1=Label(cart_frame,text=item[5],font=("Helvetica",9),relief=SUNKEN,borderwidth=3,padx=12,bg="coral")
+            Rack_label1=Label(cart_frame,text=item[5],font=("Helvetica",9),relief=SUNKEN,borderwidth=3,padx=12,bg="Ivory3")
             Rack_label1.place(x=600,y=60+size)
             #buy_button1=Button(books_frame1,text=" BUY ",font=("Helvetica",9),relief=SUNKEN,borderwidth=3,padx=5,bg="green",command=lambda: add_to_cart(book[0],book[1],book[2],book[6]))
             #buy_button1.place(x=692,y=60+size)
@@ -874,7 +927,24 @@ def checkout_win():
         not_found_label1=Label(cart_frame,text="NOT FOUND i.e., NO DATA AVAILABLE",font=("Helvetica",12,"bold"),anchor=CENTER,bg="ivory3")
         not_found_label1.place(x=200,y=150)
     
+def message():
+    global Invoice_win
+    global sales_win
+    global gif_display
+    global cart_window
+    global root
+    global root1
+    messagebox.showinfo("Info","Purchase Completed:)")
+    #clear_cart()
+    Invoice_win.destroy()
+    sales_win.destroy()
+    cart_window.destroy()
+    root1.destroy()
+    root.destroy()
     
+    
+
+
 def Invoice():
     global Invoice_win
     global total_amount
@@ -939,7 +1009,8 @@ def Invoice():
     paid_label.pack()
     thanks_label=Label(invoice_frame,text="Thanks, Visit again:)",bg="white",font=("Times New Roman",12,'bold'))
     thanks_label.place(x=110,y=520)
-
+    print_button=Button(Invoice_win,text="Confirm", relief=SUNKEN,borderwidth=7,pady=5,padx=5,font=("Helvetica",14),bg="green",command=message)
+    print_button.place(x=650,y=600)
 
 def sales_window():
     
@@ -962,7 +1033,7 @@ def sales_window():
     print_button=Button(sales_win,text="Print Reciept", relief=SUNKEN,padx=20,pady=10,font=("Helvetica",14),bg="lightgreen",command=Invoice,state=DISABLED)
     print_button.place(x=500,y=50)
 
-    Logout_button=Button(sales_win,text="LOGOUT",relief=SUNKEN,bg="red",command=exit_program, anchor=CENTER,padx=30,pady=10,font=(("Times New Roman",15)),borderwidth=5)
+    Logout_button=Button(sales_win,text=" Back ",relief=SUNKEN,bg="red",command=sales_win.destroy, anchor=CENTER,padx=30,pady=10,font=(("Times New Roman",15)),borderwidth=5)
     Logout_button.place(x=350,y=620)
 def insert_stock():
     global stockist_name_emp
@@ -1171,7 +1242,7 @@ def employee_window():
     employee_win.title("Employee | BOOKSHOP AUTOMATION SYSTEM")
     update_label=Button(employee_win,text="Update Stock",relief=SUNKEN,padx=40,pady=5,borderwidth=2,bg="Violet",command=employee_work)
     update_label.place(x=230,y=90)
-    Logout_button=Button(employee_win,text="LOGOUT",relief=SUNKEN,bg="red",command=exit_program, anchor=CENTER,padx=30,pady=10,font=(("Times New Roman",15)),borderwidth=5)
+    Logout_button=Button(employee_win,text=" Back ",relief=SUNKEN,bg="red",command=employee_win.destroy, anchor=CENTER,padx=30,pady=10,font=(("Times New Roman",15)),borderwidth=5)
     Logout_button.place(x=230,y=680)
 
     return
@@ -1218,7 +1289,7 @@ def manager_view():
     else:
         not_found_label1=Label(request_field_frame,text="NOT FOUND i.e., NO DATA AVAILABLE",font=("Helvetica",12,"bold"),anchor=CENTER,bg="ivory3")
         not_found_label1.place(x=250,y=100)
-    Logout_button=Button(manager_win,text="LOGOUT",relief=SUNKEN,bg="red",command=exit_program, anchor=CENTER,padx=30,pady=10,font=(("Times New Roman",15)),borderwidth=5)
+    Logout_button=Button(manager_win,text=" Back ",relief=SUNKEN,bg="red",command=manager_win.destroy, anchor=CENTER,padx=30,pady=10,font=(("Times New Roman",15)),borderwidth=5)
     Logout_button.place(x=350,y=620)
     
 def manager_window():
@@ -1239,11 +1310,75 @@ def manager_window():
     request_field_button=Button(manager_win,text="View Request Field",relief=SUNKEN,bg="green",padx=5,pady=5,borderwidth=5,command=manager_view)
     request_field_button.place(x=350,y=20)
 
+
 def statistics1():
-    sql_query="SELECT date_time,quantity,amount from sales_statistics;"
+    global owner_win
+    sql_query="SELECT date_time,full_name,quantity,amount from sales_statistics;"
     cursor.execute(sql_query)
     stats_list1=cursor.fetchall()
 
+    revenue=0
+    for stat in stats_list1:
+        revenue+=stat[3]
+    
+    print(stats_list1)
+    now=(date.today())
+    books_qty=0
+    for stats in stats_list1:
+        sql_query1="SELECT DATEDIFF(%s,%s)+1;"
+        cursor.execute(sql_query1,(now,stats[0]))
+        res=cursor.fetchone()
+        print(res)
+        books_qty+=stats[2]
+        if(res[0]<15):
+            inv_level=2*books_qty
+            inventory_label=Label(owner_win,text="Inventory Level Required is:" +f"{inv_level}",relief=SUNKEN,padx=5,pady=7,bg="ivory3")
+            inventory_label.place(x=310,y=110)
+            break
+    
+    threshold_frame=Frame(owner_win,padx=10,pady=10,bg="Ivory3")
+    threshold_frame.place(x=50,y=170,height=400,width=700)
+    
+    ISBN_label=Label(threshold_frame,text="ISBN",font=("Helvetica",10),relief=SUNKEN,borderwidth=3,padx=47,anchor=CENTER,bg="violet")
+    ISBN_label.place(x=5,y=5)
+    title_label=Label(threshold_frame,text="Title",font=("Helvetica",10),relief=SUNKEN,borderwidth=3,padx=80,bg="violet")
+    title_label.place(x=145,y=5)
+    quantity_label=Label(threshold_frame,text="N_Books",font=("Helvetica",10),relief=SUNKEN,borderwidth=3,padx=8,bg="violet")
+    quantity_label.place(x=500,y=5)
+    author_label=Label(threshold_frame,text="Author",font=("Helvetica",10),relief=SUNKEN,borderwidth=3,padx=60,bg="violet")
+    author_label.place(x=335,y=5)
+    price_label=Label(threshold_frame,text="Price",font=("Helvetica",10),relief=SUNKEN,borderwidth=3,padx=32,bg="violet")
+    price_label.place(x=580,y=5)
+    #buy_label=Label(books_frame1,text="Add to cart",font=("Helvetica",10),relief=SUNKEN,borderwidth=3,padx=5,bg="violet")
+    #buy_label.place(x=675,y=5)
+
+    query="SELECT ISBN,title,author_name,quantity,sell_price FROM inventory where quantity<(%s);"
+    cursor.execute(query,(inv_level,))
+    threshold_list=cursor.fetchall()
+    size=0
+    if(len(threshold_list)!=0):
+        for item in threshold_list:
+            ISBN_label1=Label(threshold_frame,text=item[0],font=("Helvetica",9),borderwidth=3,anchor=CENTER,bg="Ivory3")
+            ISBN_label1.place(x=12,y=60+size)
+            title_label1=Label(threshold_frame,text=f"{item[1]}",font=("Helvetica",9),borderwidth=3,bg="Ivory3")
+            title_label1.place(x=152,y=60+size)
+            quantity_label1=Label(threshold_frame,text=item[3],font=("Helvetica",9),borderwidth=3,padx=4,bg="Ivory3")
+            quantity_label1.place(x=520,y=60+size)
+            price_label1=Label(threshold_frame,text=item[4],font=("Helvetica",9),borderwidth=3,padx=15,bg="Ivory3")
+            price_label1.place(x=600,y=60+size)
+            author_label1=Label(threshold_frame,text=item[2],font=("Helvetica",9),borderwidth=3,bg="Ivory3")
+            author_label1.place(x=345,y=60+size)
+            #buy_button1=Button(books_frame1,text=" BUY ",font=("Helvetica",9),relief=SUNKEN,borderwidth=3,padx=5,bg="green",command=lambda: add_to_cart(book[0],book[1],book[2],book[6]))
+            #buy_button1.place(x=692,y=60+size)
+            size+=55
+    else:
+        not_found_label1=Label(threshold_frame,text="No books below threshold",font=("Helvetica",12,"bold"),anchor=CENTER,bg="ivory3")
+        not_found_label1.place(x=200,y=250)
+         
+            
+
+    revenue_label=Label(owner_win,text="Revenue: "+f"{revenue}",font=("Helvetica",14),relief=SUNKEN,borderwidth=3,padx=25,bg="violet")
+    revenue_label.place(x=600,y=630)
     #not_found_label1=Label(request_field_frame,text="NOT FOUND i.e., NO DATA AVAILABLE",font=("Helvetica",12,"bold"),anchor=CENTER,bg="ivory3")
     #not_found_label1.place(x=250,y=100)
     
@@ -1266,11 +1401,12 @@ def owner_window():
     
      # title
     owner_win.title("Owner | BOOKSHOP AUTOMATION SYSTEM")
-    view_label=Button(employee_win,text="View Inventory Level",relief=SUNKEN,padx=20,pady=5,borderwidth=2,bg="Violet",command=owner_work)
-    view_label.place(x=320,y=20)
-    Logout_button=Button(employee_win,text="LOGOUT",relief=SUNKEN,bg="red",command=exit_program, anchor=CENTER,padx=30,pady=10,font=(("Times New Roman",15)),borderwidth=5)
+
+    view_label=Button(owner_win,text="View Inventory Level & Below Threshold",relief=SUNKEN,padx=20,pady=7,borderwidth=5,bg="Violet",command=owner_work)
+    view_label.place(x=270,y=20)
+    Logout_button=Button(owner_win,text=" Back ",relief=SUNKEN,bg="red",command=owner_win.destroy, anchor=CENTER,padx=30,pady=10,font=(("Times New Roman",15)),borderwidth=5)
     Logout_button.place(x=350,y=620)
-    return
+    
    
 def reading_gif():
     global loaded_img
@@ -1379,46 +1515,11 @@ def exit_program():
 
     #yes_no messagebox
     global rootaccess
-    global VS_access_window
-    global gif_display
-    global VS_root
-    global root
-    global root1
-    global request_win
-    global cart_window
-    global Invoice_win
-    global sales_win
-    global employee_win
-    global manager_win
-    global owner_win
+    
     yes_no=messagebox.askyesno("Warning! ","Do you really want to exit? ")
-    if(yes_no):
-        if(rootaccess):
-            rootaccess.destroy()
-        if( VS_access_window):
-            VS_access_window.destroy()
-        if( gif_display):
-            gif_display.destroy()
-        if( VS_root):
-            VS_root.destroy()
-        if( root):
-            root.destroy()
-        if( root1):
-            root1.destroy()
-        if( request_win):
-            request_win.destroy()
-        if( cart_window):
-            cart_window.destroy()
-        if( Invoice_win):
-            Invoice_win.destroy()
-        if( sales_win):
-            sales_win.destroy()
-        if( employee_win):
-            employee_win.destroy()
-        if(  manager_win):
-             manager_win.destroy()
-        if( owner_win):
-            owner_win.destroy()
+    if(yes_no==True):
+        
+        rootaccess.destroy()
     else:
         pass
     
@@ -1428,7 +1529,7 @@ def clear_cart():
     cursor.execute(sql_query)
 
 
-connection=create_connection('localhost','root','V@$u#1528','mysql_native_password','Bookshop_database')
+connection=create_connection('localhost','root','*Vasu@1528k','Bookshop_database')
 cursor=connection.cursor() 
 #cursor.execute("CREATE TABLE vs_members( emp_id int,username varchar(40), password varchar(15), PRIMARY KEY (emp_id));" )
 
@@ -1441,16 +1542,15 @@ cursor=connection.cursor()
 '''
 def close_connection():
     #close the connnection
-    if connection and cursor:
-        cursor.close()
+    if (connection):
         connection.close()
-close_connection()
+
 '''
 
 
 root_access()
 # clear the cart before other customer use after purchase of current customer
-clear_cart()
+#clear_cart()
 
 rootaccess.mainloop()
 #commit changes
