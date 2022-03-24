@@ -1551,16 +1551,18 @@ def close_connection():
 '''
 
 
-root_access()
+#root_access()
 # clear the cart before other customer use after purchase of current customer
 #clear_cart()
 
-rootaccess.mainloop()
-#commit changes
-connection.commit()
 
 
 
-
+if __name__=="__main__":
+    root_access()
+    clear_cart()
+    rootaccess.mainloop()
+    #commit changes
+    connection.commit()
 
 
