@@ -411,24 +411,26 @@ def search_author():
     list_len=len(author_list)
     result_title=""
     is_found=False
+    books_details1=[]
     if(author_or_book_entry.get()):
         for book1 in author_list:
-            if (author_or_book_entry.get().lower() in book1[0].lower() and (book!=author_list[list_len-1])):
+            if (author_or_book_entry.get().lower() in book1[0].lower() and (book1!=author_list[list_len-1])):
                 is_found=True
                 result_title=book1[0]
                 sql_query="SELECT * FROM inventory WHERE author_name=(%s)"
                 cursor.execute(sql_query,(result_title,))
                 book_details=cursor.fetchall()
-                books_details+=book_details
-            elif(author_or_book_entry.get().lower() in book1[0].lower() and (book==author_list[list_len-1])):
+
+                books_details1+=book_details
+            elif(author_or_book_entry.get().lower() in book1[0].lower() and (book1==author_list[list_len-1])):
                 is_found=True
                 result_title=book1[0]
                 sql_query="SELECT * FROM inventory WHERE author_name=(%s)"
                 cursor.execute(sql_query,(result_title,))
                 book_details=cursor.fetchall()
-                books_details+=book_details
+                books_details1+=book_details
                 break
-            elif(book==author_list[list_len-1]):
+            elif(book1==author_list[list_len-1]):
                 break
 
     
