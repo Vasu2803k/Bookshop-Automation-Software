@@ -111,7 +111,7 @@ def VS_access(employee_type):
     password_label=Label(VS_access_window,text="Password",padx=15,pady=10,relief=SUNKEN)
     password_label.place(x=100,y=450)
 
-    password_entry=Entry(VS_access_window,width=90,borderwidth=10)
+    password_entry=Entry(VS_access_window,show="*",width=90,borderwidth=10)
     password_entry.place(x=200,y=450)
     
     # clear button
@@ -1566,5 +1566,4 @@ if __name__=="__main__":
     rootaccess.mainloop()
     #commit changes
     connection.commit()
-
 
