@@ -86,6 +86,7 @@ def VS_access(employee_type):
     global VS_access_window
     global password_entry
     global user_name_entry
+    
     VS_access_window=Toplevel()
     # changing the colour of main window
     VS_access_window.configure(bg="orange")
@@ -163,6 +164,11 @@ def check_vs_member(employee_type):
             VS_access_window.destroy()
         
 
+def backy(present_win,previous_win):
+    #global rootaccess
+    #global root
+    present_win.withdraw()
+    previous_win.wm_deiconify()
 
 def clear():
     global VS_access_window
@@ -174,6 +180,10 @@ def clear():
 
 def VS_Member():
     global VS_root
+    global rootaccess
+
+    rootaccess.withdraw()
+
     VS_root=Toplevel()
     # changing the colour of main window
     VS_root.configure(bg="orange")
@@ -197,7 +207,7 @@ def VS_Member():
     Owner_button=Button(VS_root,text="Owner",padx=32,pady=8,relief=SUNKEN,font=("Helvetica",14),bg="lightgreen",command=lambda: VS_access("Owner"))
     Owner_button.place(x=350,y=390)
     
-    main_window_button=Button(VS_root,text="Back to previous window/Page",padx=2,pady=8,relief=SUNKEN,font=("Helvetica",14),bg="green",command=VS_root.destroy)
+    main_window_button=Button(VS_root,text="Back to previous window/Page",padx=2,pady=8,relief=SUNKEN,font=("Helvetica",14),bg="green",command=lambda: backy(VS_root,rootaccess))
     main_window_button.place(x=280,y=630)
 
 
@@ -205,6 +215,7 @@ def VS_Member():
 def customer_window():
 
     global rootaccess
+    rootaccess.withdraw()
     '''
     if(rootaccess):
         rootaccess.destroy()
@@ -217,6 +228,7 @@ def customer_window():
     global contact_entry
     global address_entry
     # main window
+    
     root=Toplevel()
     
     # changing the colour of main window
@@ -264,7 +276,9 @@ def customer_window():
     address_entry=Entry(root,width=90,borderwidth=2)
     address_entry.grid(row=4,column=0,columnspan=4,padx=125)
     enter_button1=Button(root, text="ENTER",bd=10, padx=40, pady=10, bg="green",command=enter_button)
-    enter_button1.place(x=350,y=600)
+    enter_button1.place(x=250,y=600)
+    exit_button1=Button(root, text="BACK",bd=10, padx=40, pady=10, bg="green",command=lambda: backy(root,rootaccess))
+    exit_button1.place(x=450,y=600)
     
     
 
@@ -330,7 +344,7 @@ def books():
     global books_frame
     global root1
     global root
-    
+    root.withdraw()
     #root.destroy()
     root1=Toplevel()
     root1.geometry('800x680')
@@ -368,7 +382,7 @@ def books():
     clear_label=Button(root1,text="Clear Results",padx=9,pady=10,font=("Helvetica",14),bg="lightgreen",relief=SUNKEN,borderwidth=5,command=clear_func1)
     clear_label.place(x=80,y=630)
 
-    Logout_button=Button(root1,text=" Back ",relief=SUNKEN,bg="red",command=root1.destroy, anchor=CENTER,padx=30,pady=10,font=(("Times New Roman",14)),borderwidth=5)
+    Logout_button=Button(root1,text=" Back ",relief=SUNKEN,bg="red",command=lambda: backy(root1,root), anchor=CENTER,padx=30,pady=10,font=(("Times New Roman",14)),borderwidth=5)
     Logout_button.place(x=330,y=630)
     
     
@@ -679,8 +693,8 @@ def Request_func():
     global contact_no_entry
     global book_title_entry
     global author_name_entry
-    global root
-    
+    global root1
+    root1.withdraw()
     global request_win
     '''
     if(root):
@@ -722,10 +736,12 @@ def Request_func():
     
     insert_button=Button(request_win,text="Submit",relief=SUNKEN,padx=15,pady=8,bd=5,bg="green",command=request_field)
     insert_button.place(x=250,y=370)
-
+    Logout_button=Button(request_win,text=" Back ",relief=SUNKEN,bg="red",command=lambda: backy(request_win,root1), anchor=CENTER,padx=30,pady=10,font=(("Times New Roman",14)),borderwidth=5)
+    Logout_button.place(x=227,y=440)
 def cart_win():
     global cart_window
-
+    global root1
+    root1.withdraw()
     cart_window=Toplevel()
     cart_window.title("Cart")
     cart_window.configure(bg="orange")
@@ -781,7 +797,7 @@ def cart_win():
         not_found_label1=Label(books_frame1,text="NOT FOUND i.e., NO DATA AVAILABLE",font=("Helvetica",12,"bold"),anchor=CENTER,bg="ivory3")
         not_found_label1.place(x=200,y=150)
 
-    back_button=Button(cart_window,text=" Back ",font=("Helvetica",9),relief=SUNKEN,borderwidth=5,padx=50,bg="green",command=cart_window.destroy)
+    back_button=Button(cart_window,text=" Back ",font=("Helvetica",9),relief=SUNKEN,borderwidth=5,padx=50,bg="green",command=lambda: backy(cart_window,root1))
     back_button.place(x=200,y=647)
     proceed_button=Button(cart_window,text=" PROCEED TO BUY ",font=("Helvetica",9),relief=SUNKEN,borderwidth=5,padx=5,bg="green",command=Checkout)
     proceed_button.place(x=500,y=647)
@@ -1021,6 +1037,8 @@ def sales_window():
     
     global sales_win
     global print_button
+    global VS_root
+    VS_root.withdraw
     sales_win=Toplevel()
     # changing the colour of main window
     sales_win.configure(bg="orange")
@@ -1038,7 +1056,7 @@ def sales_window():
     print_button=Button(sales_win,text="Print Reciept", relief=SUNKEN,padx=20,pady=10,font=("Helvetica",14),bg="lightgreen",command=Invoice,state=DISABLED)
     print_button.place(x=500,y=50)
 
-    Logout_button=Button(sales_win,text=" Back ",relief=SUNKEN,bg="red",command=sales_win.destroy, anchor=CENTER,padx=30,pady=10,font=(("Times New Roman",15)),borderwidth=5)
+    Logout_button=Button(sales_win,text=" Back ",relief=SUNKEN,bg="red",command=lambda: backy(sales_win,VS_root), anchor=CENTER,padx=30,pady=10,font=(("Times New Roman",15)),borderwidth=5)
     Logout_button.place(x=350,y=620)
 def insert_stock():
     global stockist_name_emp
@@ -1231,9 +1249,12 @@ def employee_work():
     
     insert_button=Button(employee_win,text="Submit",relief=SUNKEN,padx=15,pady=8,bd=5,bg="green",command=update_details_check)
     insert_button.place(x=270,y=520)
+    
 
 def employee_window():
     global employee_win
+    global VS_root
+    VS_root.withdraw()
     employee_win=Toplevel()
     # changing the colour of main window
     employee_win.configure(bg="orange")
@@ -1247,13 +1268,15 @@ def employee_window():
     employee_win.title("Employee | BOOKSHOP AUTOMATION SYSTEM")
     update_label=Button(employee_win,text="Update Stock",relief=SUNKEN,padx=40,pady=5,borderwidth=2,bg="Violet",command=employee_work)
     update_label.place(x=230,y=90)
-    Logout_button=Button(employee_win,text=" Back ",relief=SUNKEN,bg="red",command=employee_win.destroy, anchor=CENTER,padx=30,pady=10,font=(("Times New Roman",15)),borderwidth=5)
-    Logout_button.place(x=230,y=680)
+    Logout_button=Button(employee_win,text=" Back ",relief=SUNKEN,bg="red",command=lambda: backy(employee_win,VS_root), anchor=CENTER,padx=30,pady=10,font=(("Times New Roman",15)),borderwidth=5)
+    Logout_button.place(x=250,y=680)
 
     return
     
 def manager_view():
     global manager_win
+    global VS_root
+    
     request_field_frame=Frame(manager_win,padx=10,pady=10,bg='Ivory3')
     request_field_frame.place(x=30,y=80,height=400,width=730)
     
@@ -1294,11 +1317,13 @@ def manager_view():
     else:
         not_found_label1=Label(request_field_frame,text="NOT FOUND i.e., NO DATA AVAILABLE",font=("Helvetica",12,"bold"),anchor=CENTER,bg="ivory3")
         not_found_label1.place(x=250,y=100)
-    Logout_button=Button(manager_win,text=" Back ",relief=SUNKEN,bg="red",command=manager_win.destroy, anchor=CENTER,padx=30,pady=10,font=(("Times New Roman",15)),borderwidth=5)
+    Logout_button=Button(manager_win,text=" Back ",relief=SUNKEN,bg="red",command=lambda: backy(manager_win,VS_root), anchor=CENTER,padx=30,pady=10,font=(("Times New Roman",15)),borderwidth=5)
     Logout_button.place(x=350,y=620)
     
 def manager_window():
     global manager_win
+    global VS_root
+    VS_root.withdraw()
     manager_win=Toplevel()
     # changing the colour of main window
     manager_win.configure(bg="orange")
@@ -1393,7 +1418,8 @@ def owner_work():
     statistics1()
 def owner_window():
     global owner_win
-    
+    global VS_root
+    VS_root.withdraw()
     owner_win=Toplevel()
     # changing the colour of main window
     owner_win.configure(bg="orange")
@@ -1409,7 +1435,7 @@ def owner_window():
 
     view_label=Button(owner_win,text="View Inventory Level & Below Threshold",relief=SUNKEN,padx=20,pady=7,borderwidth=5,bg="Violet",command=owner_work)
     view_label.place(x=270,y=20)
-    Logout_button=Button(owner_win,text=" Back ",relief=SUNKEN,bg="red",command=owner_win.destroy, anchor=CENTER,padx=30,pady=10,font=(("Times New Roman",15)),borderwidth=5)
+    Logout_button=Button(owner_win,text=" Back ",relief=SUNKEN,bg="red",command=lambda: backy(owner_win,VS_root), anchor=CENTER,padx=30,pady=10,font=(("Times New Roman",15)),borderwidth=5)
     Logout_button.place(x=350,y=620)
     
    
