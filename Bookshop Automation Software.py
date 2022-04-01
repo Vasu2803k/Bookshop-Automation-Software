@@ -94,6 +94,7 @@ def VS_access(employee_type):
 
     # Geometry or dimensions of root Window
     VS_access_window.geometry('800x680')
+
     # Displaying Icon
     VS_access_window.iconbitmap('D:\Project_1\Images_Icons\Bookshop_icon_2.ico')
     
@@ -114,6 +115,7 @@ def VS_access(employee_type):
 
     password_entry=Entry(VS_access_window,show="*",width=90,borderwidth=10)
     password_entry.place(x=200,y=450)
+    
     
     # clear button
     clear_button1=Button(VS_access_window, text="CLEAR",bd=10, padx=50, pady=10, bg="lightgreen",command=clear)
