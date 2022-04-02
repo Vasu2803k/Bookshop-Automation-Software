@@ -17,7 +17,6 @@ from tkinter import messagebox
 from tkinter.font import BOLD
 from PIL import ImageTk,Image, ImageSequence
 import time
-import mysql
 import mysql.connector as connector
 from mysql.connector import Error
 
@@ -143,16 +142,16 @@ def check_vs_member(employee_type):
         if(emp_type.lower()==employee_type.lower() and user.lower()==user_name_entry.get().lower() and passwd==password_entry.get()):
             messagebox.showinfo("Access Granted","Validation successful, Access granted!")
             if(emp_type.lower()=="Sales Clerk".lower()):
-                VS_access_window.destroy()
+                VS_access_window.withdraw()
                 sales_window()
             elif(emp_type.lower()=="Employee".lower()):
-                VS_access_window.destroy()
+                VS_access_window.withdraw()
                 employee_window()
             elif(emp_type.lower()=="Manager".lower()):
-                VS_access_window.destroy()
+                VS_access_window.withdraw()
                 manager_window()
             elif(emp_type.lower()=="Owner".lower()):
-                VS_access_window.destroy()
+                VS_access_window.withdraw()
                 owner_window()
             break
     
@@ -829,7 +828,9 @@ def clear_func1():
 
 
 def Checkout():
-    VS_access("Sales Clerk")
+    global cart_window
+    cart_window.withdraw()
+    VS_Member()
 
 def insert_statistics():
     global total_amount
@@ -899,8 +900,9 @@ def payment():
 
         elif(prompt_reply==None):
             messagebox.showwarning("Pay?","Are you sure? Click OK to exit")
-            is_paid=False
-
+            ispaid=True
+            messagebox.showerror("Transaction","Transaction isnt completed!,\n Start over again!")
+            
 
 def checkout_win():
     global sales_win
@@ -1039,9 +1041,12 @@ def sales_window():
     
     global sales_win
     global print_button
+    global VS_access_window
     global VS_root
-    VS_root.withdraw
+    
     sales_win=Toplevel()
+    
+    
     # changing the colour of main window
     sales_win.configure(bg="orange")
     # Geometry or dimensions of root Window
@@ -1058,7 +1063,7 @@ def sales_window():
     print_button=Button(sales_win,text="Print Reciept", relief=SUNKEN,padx=20,pady=10,font=("Helvetica",14),bg="lightgreen",command=Invoice,state=DISABLED)
     print_button.place(x=500,y=50)
 
-    Logout_button=Button(sales_win,text=" Back ",relief=SUNKEN,bg="red",command=lambda: backy(sales_win,VS_root), anchor=CENTER,padx=30,pady=10,font=(("Times New Roman",15)),borderwidth=5)
+    Logout_button=Button(sales_win,text=" Back ",relief=SUNKEN,bg="red",command=lambda: backy(sales_win,VS_access_window), anchor=CENTER,padx=30,pady=10,font=(("Times New Roman",15)),borderwidth=5)
     Logout_button.place(x=350,y=620)
 def insert_stock():
     global stockist_name_emp
@@ -1562,7 +1567,7 @@ def clear_cart():
     cursor.execute(sql_query)
 
 
-connection=create_connection('localhost','root','*Vasu@1528k','Bookshop_database')
+connection=create_connection('localhost','root','*Vasu@1528k','Bookshop_Database')
 cursor=connection.cursor() 
 #cursor.execute("CREATE TABLE vs_members( emp_id int,username varchar(40), password varchar(15), PRIMARY KEY (emp_id));" )
 
