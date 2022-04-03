@@ -185,7 +185,7 @@ def VS_Member():
 
     rootaccess.withdraw()
 
-    VS_root=Toplevel()
+    VS_root=Tk()
     # changing the colour of main window
     VS_root.configure(bg="orange")
 
@@ -210,7 +210,6 @@ def VS_Member():
     
     main_window_button=Button(VS_root,text="Back to previous window/Page",padx=2,pady=8,relief=SUNKEN,font=("Helvetica",14),bg="green",command=lambda: backy(VS_root,rootaccess))
     main_window_button.place(x=280,y=630)
-
 
 
 def customer_window():
@@ -309,6 +308,7 @@ def enter_button():
             name_entry.delete(0, END) 
         else:
             root.destroy()
+            root_access()
         
     elif(len(contact_entry.get())!=10):
         prompt_reply=messagebox.askretrycancel(" ALERT!","Click Retry to enter again or Cancel to Exit \n Hint: Contact Number should be of 10 characters ")
@@ -316,12 +316,14 @@ def enter_button():
             contact_entry.delete(0,END) 
         else:
             root.destroy()
+            root_access()
     elif(res==True):
         prompt_reply=messagebox.askretrycancel(" ALERT!","Click Retry to enter again or Cancel to Exit \n Hint: Only Numbers/Digits")
         if(prompt_reply==True):
             contact_entry.delete(0,END) 
         else:
             root.destroy()
+            root_access()
     
     elif(len(address_entry.get())<10):
         prompt_reply=messagebox.askretrycancel(" ALERT!","Click Retry to enter again or Cancel to Exit \n Hint: Address should be more than 10 characters")
@@ -329,6 +331,7 @@ def enter_button():
             address_entry.delete(0, END) 
         else:
             root.destroy()
+            root_access()
     
         
     else:
@@ -414,7 +417,7 @@ def books():
 def search_author():
     global author_or_book_entry
     global books_frame
-    global books_details1
+    
 
     reading_gif()
     clear_func1()
@@ -424,26 +427,35 @@ def search_author():
     author_list=cursor.fetchall()
 
     list_len=len(author_list)
-    result_title=""
+    result_title_prev=""
+    result_title_now=""
     is_found=False
     books_details1=[]
     if(author_or_book_entry.get()):
         for book1 in author_list:
             if (author_or_book_entry.get().lower() in book1[0].lower() and (book1!=author_list[list_len-1])):
                 is_found=True
-                result_title=book1[0]
-                sql_query="SELECT * FROM inventory WHERE author_name=(%s)"
-                cursor.execute(sql_query,(result_title,))
-                book_details=cursor.fetchall()
-
-                books_details1+=book_details
+                result_title_now=book1[0]
+                if(result_title_prev!=result_title_now):
+                    sql_query="SELECT * FROM inventory WHERE author_name=(%s);"
+                    cursor.execute(sql_query,(result_title_now,))
+                    book_details=cursor.fetchall()
+                    books_details1+=book_details
+                    result_title_prev=book1[0]
+                else:
+                    pass
+                
             elif(author_or_book_entry.get().lower() in book1[0].lower() and (book1==author_list[list_len-1])):
                 is_found=True
-                result_title=book1[0]
-                sql_query="SELECT * FROM inventory WHERE author_name=(%s)"
-                cursor.execute(sql_query,(result_title,))
-                book_details=cursor.fetchall()
-                books_details1+=book_details
+                result_title_now=book1[0]
+                if(result_title_prev!=result_title_now):
+                    sql_query="SELECT * FROM inventory WHERE author_name=(%s);"
+                    cursor.execute(sql_query,(result_title_now,))
+                    book_details=cursor.fetchall()
+                    books_details1+=book_details
+                    result_title_prev=book1[0]
+                else:
+                    pass
                 break
             elif(book1==author_list[list_len-1]):
                 break
@@ -484,7 +496,7 @@ def search_book():
     
     global books_frame
     global gif_display
-    global books_details
+    
     
     
     reading_gif()
@@ -498,28 +510,44 @@ def search_book():
     print(book_list)
     
     books_details=[]
-    result_title=""
+    result_title_prev=""
+    result_title_now=""
     is_found=False
-    if(author_or_book_entry.get()):
+    if(author_or_book_entry.get()!="" or author_or_book_entry.get()!=" "):
         for book1 in book_list:
+            print("entering")
+            print(books_details)
             if (author_or_book_entry.get().lower() in book1[0].lower() and (book1!=book_list[list_len-1])):
                 is_found=True
-                result_title=book1[0]
-                sql_query="SELECT * FROM inventory WHERE title=(%s)"
-                cursor.execute(sql_query,(result_title,))
-                book_details=cursor.fetchall()
-                books_details+=book_details
-                print(books_details)
+                result_title_now=book1[0]
+                if(result_title_prev!=result_title_now):
+                    sql_query="SELECT * FROM inventory WHERE title=(%s);"
+                    cursor.execute(sql_query,(result_title_now,))
+                    book_details=cursor.fetchall()
+                    books_details+=book_details
+                    result_title_prev=book1[0]
+                else:
+                    pass
+               
+                
             elif(author_or_book_entry.get().lower() in book1[0].lower() and (book1==book_list[list_len-1])):
                 is_found=True
-                result_title=book1[0]
-                sql_query="SELECT * FROM inventory WHERE author_name=(%s)"
-                cursor.execute(sql_query,(result_title,))
-                book_details=cursor.fetchall()
-                books_details+=book_details
+                result_title_now=book1[0]
+                if(result_title_prev!=result_title_now):
+                    sql_query="SELECT * FROM inventory WHERE title=(%s);"
+                    cursor.execute(sql_query,(result_title_now,))
+                    book_details=cursor.fetchall()
+                    books_details+=book_details
+                    result_title_prev=book1[0]
+                else:
+                    pass
                 break
             elif(book1==book_list[list_len-1]):
+                print("len over")
                 break
+            else:
+                print("else ppart")
+                pass
         else:
             not_found_label1=Label(books_frame,text="NOT FOUND i.e., NO DATA AVAILABLE",font=("Helvetica",12,"bold"),anchor=CENTER,bg="ivory3")
             not_found_label1.place(x=250,y=100)
@@ -613,13 +641,9 @@ def request_field_insert():
         book_title_entry.delete(0,END)
         author_name_entry.delete(0,END)
     else:
-        reply=messagebox.askretrycancel('Search for book',"if you want to search for another book, \nClick on'Retry' or else click cancel to Exit.")
-        if(reply==True):
-            request_win.destroy()
-            author_or_book_entry.delete(0,END)
-        else:
-            request_win.destroy()
-            root1.destroy()
+        
+        request_win.destroy()
+        root_access()
 
 def request_field():
     global customer_name_entry
@@ -629,6 +653,7 @@ def request_field():
     global request_win
     global author_or_book_entry
     global root1
+    global root_access
 
     res = (any((ord(ele)>=65 and ord(ele)<=90) or (ord(ele)>=97 and ord(ele)<=122) for ele in contact_no_entry.get()))
 
@@ -641,6 +666,7 @@ def request_field():
             yes_no=messagebox.askyesno("Request","Click 'YES' to quit or 'NO' to continue")
             if(yes_no==True):
                 request_win.destroy()
+                root_access()
             else:
                 customer_name_entry.delete(0,END)
         
@@ -652,6 +678,7 @@ def request_field():
             yes_no=messagebox.askyesno("Request","Click 'YES' to quit or 'NO' to continue")
             if(yes_no==True):
                 request_win.destroy()
+                root_access()
             else:
                 contact_no_entry.delete(0,END)
     elif(res==True):
@@ -662,6 +689,7 @@ def request_field():
             yes_no=messagebox.askyesno("Request","Click 'YES' to quit or 'NO' to continue")
             if(yes_no==True):
                 request_win.destroy()
+                root_access()
             else:
                 contact_no_entry.delete(0,END)
     
@@ -673,6 +701,7 @@ def request_field():
             yes_no=messagebox.askyesno("Request","Click 'YES' to quit or 'NO' to continue")
             if(yes_no==True):
                 request_win.destroy()
+                root_access()
             else:
                 book_title_entry.delete(0, END)
     elif(len(author_name_entry.get())<5):
@@ -683,6 +712,7 @@ def request_field():
             yes_no=messagebox.askyesno("Request","Click 'YES' to quit or 'NO' to continue")
             if(yes_no==True):
                 request_win.destroy()
+                root_access()
             else:
                 author_name_entry.delete(0, END) 
             
@@ -873,6 +903,7 @@ def update_inventory():
     sql_query2="DELETE FROM INVENTORY where quantity=0;"
     cursor.execute(sql_query2)
     
+    
 def payment():
     global total_amount
     global print_button
@@ -958,15 +989,13 @@ def message():
     global root
     global root1
     messagebox.showinfo("Info","Purchase Completed:)")
-    #clear_cart()
+    clear_cart()
     Invoice_win.destroy()
     sales_win.destroy()
     cart_window.destroy()
     root1.destroy()
     root.destroy()
     
-    
-
 
 def Invoice():
     global Invoice_win
@@ -977,25 +1006,24 @@ def Invoice():
     Invoice_win.geometry('800x680')
     # Displaying Icon
     Invoice_win.iconbitmap('D:\Project_1\Images_Icons\Bookshop_icon_2.ico')
-    
      # title
     Invoice_win.title("Invoice | BOOKSHOP AUTOMATION SYSTEM")
 
     invoice_frame=Frame(Invoice_win,bg="white",borderwidth=2,relief=SUNKEN)
-    invoice_frame.place(x=150,y=5,height=650,width=450)
+    invoice_frame.place(x=150,y=5,height=650,width=500)
     invoice_frame.configure(bg="white")
     #store_text=Text(invoice_frame,)
     
     invoice_no=0
     store_text=f'''
-                VS BOOKSTORE
-            New Version of Bookshop
+                    VS BOOKSTORE
+                New Version of Bookshop
 
- -------------------------------------------------------------------
+ -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
 
-        Invoice Number     :   {invoice_no}
+            Invoice Number     :   {invoice_no}
 
- -------------------------------------------------------------------
+ -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
         '''
     
     reciept_label=Label(invoice_frame,text=store_text,bg="white")
@@ -1004,18 +1032,19 @@ def Invoice():
     cursor.execute(sql_query)
     reciept_list=cursor.fetchall()
 
-    customer_label=Label(invoice_frame,text=f"Name: {reciept_list[0][0]}\t\t\t",bg="white")
+    customer_label=Label(invoice_frame,text=f"\t\tName: \t{reciept_list[0][0]}\t\t\t",bg="white")
     customer_label.pack()
 
-    design_text="----------------------------------------------------------------"
-    design_label=Label(invoice_frame,text=design_text,bg="white")
+    design_text1="-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-"
+    design_text2="--------------------------------------------------------------------"
+    design_label=Label(invoice_frame,text=design_text1,bg="white")
     design_label.pack()
-    heading_label=Label(invoice_frame,text="\n book_name\t\t  ISBN\t\tQty\tPrice\n",bg="white")
+    heading_label=Label(invoice_frame,text="book_name\t\tISBN\t\tQty\tPrice",bg="white")
     heading_label.pack()
-    design_label=Label(invoice_frame,text=design_text,bg="white")
+    design_label=Label(invoice_frame,text=design_text2,bg="white")
     design_label.pack()
     
-    
+    size=0
     for item in reciept_list:
         customer_name=item[0]
         book_name=item[1]
@@ -1023,17 +1052,18 @@ def Invoice():
         Qty=item[3]
         Price=item[4]
         
-        books_label=Label(invoice_frame,text=f" {book_name} {ISBN}  {Qty}   {Price}\n",bg="white")
+        books_label=Label(invoice_frame,text=f"{book_name}\t {ISBN}  {Qty}\t{Price}",bg="white")
         books_label.pack()
-        design_label=Label(invoice_frame,text=design_text,bg="white")
+        design_label=Label(invoice_frame,text=design_text2,bg="white")
         design_label.pack()
+        size+=20
 
-    total_label=Label(invoice_frame,text=f"\t\t\t\tTotal Amount:\t{total_amount}",bg="white")
+    total_label=Label(invoice_frame,text=f"\t\t\t\t\tTotal Amount: {total_amount}",bg="white")
     total_label.pack()
     paid_label=Label(invoice_frame,text="Paid:)",bg="white",font=("Times New Roman",12,'bold'))
     paid_label.pack()
     thanks_label=Label(invoice_frame,text="Thanks, Visit again:)",bg="white",font=("Times New Roman",12,'bold'))
-    thanks_label.place(x=150,y=520)
+    thanks_label.place(x=200,y=520)
     print_button=Button(Invoice_win,text="Confirm", relief=SUNKEN,borderwidth=7,pady=5,padx=5,font=("Helvetica",14),bg="green",command=message)
     print_button.place(x=650,y=600)
 
@@ -1045,15 +1075,12 @@ def sales_window():
     global VS_root
     
     sales_win=Toplevel()
-    
-    
     # changing the colour of main window
     sales_win.configure(bg="orange")
     # Geometry or dimensions of root Window
     sales_win.geometry('800x680')
     # Displaying Icon
     sales_win.iconbitmap('D:\Project_1\Images_Icons\Bookshop_icon_2.ico')
-    
      # title
     sales_win.title(" Sales Clerk | BOOKSHOP AUTOMATION SYSTEM")
     
@@ -1065,6 +1092,7 @@ def sales_window():
 
     Logout_button=Button(sales_win,text=" Back ",relief=SUNKEN,bg="red",command=lambda: backy(sales_win,VS_access_window), anchor=CENTER,padx=30,pady=10,font=(("Times New Roman",15)),borderwidth=5)
     Logout_button.place(x=350,y=620)
+
 def insert_stock():
     global stockist_name_emp
     global contact_no_stockist_emp
@@ -1102,6 +1130,7 @@ def update_details_check():
             yes_no=messagebox.askyesno("Request","Click 'YES' to quit or 'NO' to continue")
             if(yes_no==True):
                 employee_win.destroy()
+                VS_Member()
             else:
                 stockist_name_emp.delete(0,END)
             
@@ -1113,6 +1142,7 @@ def update_details_check():
             yes_no=messagebox.askyesno("Request","Click 'YES' to quit or 'NO' to continue")
             if(yes_no==True):
                 employee_win.destroy()
+                VS_Member()
             else:
                 contact_no_stockist_emp.delete(0,END)
     elif(res==True):
@@ -1123,6 +1153,7 @@ def update_details_check():
             yes_no=messagebox.askyesno("Request","Click 'YES' to quit or 'NO' to continue")
             if(yes_no==True):
                 employee_win.destroy()
+                VS_Member()
             else:
                 contact_no_stockist_emp.delete(0,END)
         
@@ -1134,6 +1165,7 @@ def update_details_check():
             yes_no=messagebox.askyesno("Request","Click 'YES' to quit or 'NO' to continue")
             if(yes_no==True):
                 employee_win.destroy()
+                VS_Member()
             else:
                 book_title_emp.delete(0, END)
     elif(len(author_name_emp.get())<5):
@@ -1144,6 +1176,7 @@ def update_details_check():
             yes_no=messagebox.askyesno("Request","Click 'YES' to quit or 'NO' to continue")
             if(yes_no==True):
                 employee_win.destroy()
+                VS_Member()
             else:
                 author_name_emp.delete(0, END) 
     elif(not(len(isbn_emp.get())==17 )):
@@ -1154,6 +1187,7 @@ def update_details_check():
             yes_no=messagebox.askyesno("Request","Click 'YES' to quit or 'NO' to continue")
             if(yes_no==True):
                 employee_win.destroy()
+                VS_Member()
             else:
                 isbn_emp.delete(0,END)
     
@@ -1165,6 +1199,7 @@ def update_details_check():
             yes_no=messagebox.askyesno("Request","Click 'YES' to quit or 'NO' to continue")
             if(yes_no==True):
                 employee_win.destroy()
+                VS_Member()
             else:
                 published_year_emp.delete(0,END)
     elif((not(len(quantity_emp.get())>0 )) and not((ord(quantity_emp.get())<=48 and ord(quantity_emp.get())>=57))):
@@ -1175,6 +1210,7 @@ def update_details_check():
             yes_no=messagebox.askyesno("Request","Click 'YES' to quit or 'NO' to continue")
             if(yes_no==True):
                 employee_win.destroy()
+                VS_Member()
             else:
                 quantity_emp.delete(0,END)
     elif((not(len(rack_number_emp.get())>0 )) and not ((ord(rack_number_emp.get())<=48 and ord(rack_number_emp.get())>=57))):
@@ -1185,6 +1221,7 @@ def update_details_check():
             yes_no=messagebox.askyesno("Request","Click 'YES' to quit or 'NO' to continue")
             if(yes_no==True):
                 employee_win.destroy()
+                VS_Member()
             else:
                 rack_number_emp.delete(0,END)
     elif((not(len(price_emp.get())>0 )) or not ((ord(price_emp.get())<=48 and ord(price_emp.get())>=57))):
@@ -1195,6 +1232,7 @@ def update_details_check():
             yes_no=messagebox.askyesno("Request","Click 'YES' to quit or 'NO' to continue")
             if(yes_no==True):
                 employee_win.destroy()
+                VS_Member()
             else:
                 price_emp.delete(0,END)
             
