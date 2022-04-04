@@ -1388,7 +1388,7 @@ def manager_window():
 
 def statistics1():
     global owner_win
-    sql_query="SELECT date_time,full_name,quantity,amount from sales_statistics;"
+    sql_query="SELECT date_time,full_name,books_purchased,amount from sales_statistics;"
     cursor.execute(sql_query)
     stats_list1=cursor.fetchall()
 
@@ -1399,17 +1399,21 @@ def statistics1():
     print(stats_list1)
     now=(date.today())
     books_qty=0
+    book_tit=""
+    max_threshold_level=0
     for stats in stats_list1:
         sql_query1="SELECT DATEDIFF(%s,%s)+1;"
         cursor.execute(sql_query1,(now,stats[0]))
         res=cursor.fetchone()
-        print(res)
-        books_qty+=stats[2]
+        books_qty=stats[2]
         if(res[0]<15):
             inv_level=2*books_qty
-            inventory_label=Label(owner_win,text="Inventory Level Required is:" +f"{inv_level}",relief=SUNKEN,padx=5,pady=7,bg="ivory3")
-            inventory_label.place(x=310,y=110)
-            break
+            max_threshold_level=max(max_threshold_level,inv_level)
+        else:
+            pass
+
+    inventory_label=Label(owner_win,text="Inventory Level Required is:" +f"{inv_level}",relief=SUNKEN,padx=5,pady=7,bg="ivory3",font=("Nunito",12))
+    inventory_label.place(x=310,y=110)
     
     threshold_frame=Frame(owner_win,padx=10,pady=10,bg="Ivory3")
     threshold_frame.place(x=50,y=170,height=400,width=700)
@@ -1428,7 +1432,7 @@ def statistics1():
     #buy_label.place(x=675,y=5)
 
     query="SELECT ISBN,title,author_name,quantity,sell_price FROM inventory where quantity<(%s);"
-    cursor.execute(query,(inv_level,))
+    cursor.execute(query,(max_threshold_level,))
     threshold_list=cursor.fetchall()
     size=0
     if(len(threshold_list)!=0):
