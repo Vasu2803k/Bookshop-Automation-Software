@@ -602,13 +602,16 @@ def add_to_cart():
         else:
             is_isbn=False       
             
-            sql_query1="SELECT ISBN,title,author_name,rack_number, sell_price from inventory where ISBN=(%s);"
+            sql_query1="SELECT ISBN,title,author_name,rack_number, sell_price,quantity from inventory where ISBN=(%s);"
             cursor.execute(sql_query1,(isbn,))
             cart_list=cursor.fetchall()
             print(cart_list)
             date_time=datetime.now()
             now1=date_time.strftime('%Y-%M-%D %H:%M:%S')
             books_quantity=simpledialog.askinteger("Input","Enter the number of books on your selection of purchase!")
+            if(books_quantity>cart_list[0][5]):
+                messagebox.showerror("info","Enter quantity as per given in the screen")
+                books_quantity=simpledialog.askinteger("Input","Enter the number of books on your selection of purchase!")
             sql_query2="INSERT INTO cart(time_date,customer_name,isbn_no,title,author,no_of_books,sell_price,rack_number) VALUES(%s,%s,%s,%s,%s,%s,%s,%s);"
             
             for item in cart_list:
