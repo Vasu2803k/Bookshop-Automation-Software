@@ -40,10 +40,10 @@ def root_access():
     rootaccess=Tk()
     rootaccess.configure(bg="orange")
     rootaccess.geometry('800x680')
-    rootaccess.iconbitmap('D:\Project_1\Images_Icons\Bookshop_icon_2.ico')
+    rootaccess.iconbitmap('D:\Project1_BSA\Images_Icons\Bookshop_icon_2.ico')
     
     # Create Image Widget
-    Bookshop_img_access=ImageTk.PhotoImage((Image.open("D:\Project_1\Images_Icons\Bookshop_img2.jpeg")).resize((320,300)))
+    Bookshop_img_access=ImageTk.PhotoImage((Image.open("D:\Project1_BSA\Images_Icons\Bookshop_img2.jpeg")).resize((320,300)))
     #Bookshop_img_access=Bookshop_img_access.resize((300,300))
     # text label-Shop name
     text_label_access=Label(rootaccess,text="VS Book Store",font=('Helvatical bold',50),relief=SUNKEN,bg='ivory3')
@@ -95,7 +95,7 @@ def VS_access(employee_type):
     VS_access_window.geometry('800x680')
 
     # Displaying Icon
-    VS_access_window.iconbitmap('D:\Project_1\Images_Icons\Bookshop_icon_2.ico')
+    VS_access_window.iconbitmap('D:\Project1_BSA\Images_Icons\Bookshop_icon_2.ico')
     
      # title
     VS_access_window.title("VS_access | BOOKSHOP AUTOMATION SYSTEM")
@@ -194,7 +194,7 @@ def VS_Member():
     VS_root.geometry('800x680')
 
     # Displaying Icon
-    VS_root.iconbitmap('D:\Project_1\Images_Icons\Bookshop_icon_2.ico')
+    VS_root.iconbitmap('D:\Project1_BSA\Images_Icons\Bookshop_icon_2.ico')
     
      # title
     VS_root.title("VS_Member | BOOKSHOP AUTOMATION SYSTEM")
@@ -237,10 +237,10 @@ def customer_window():
     # Geometry or dimensions of root Window
     root.geometry('800x680')
     # Displaying Icon
-    root.iconbitmap('D:\Project_1\Images_Icons\Bookshop_icon_2.ico')
+    root.iconbitmap('D:\Project1_BSA\Images_Icons\Bookshop_icon_2.ico')
     
     # Create Image Widget
-    Bookshop_img=ImageTk.PhotoImage((Image.open("D:\Project_1\Images_Icons\Bookshop_img.png")).resize((320,300)))
+    Bookshop_img=ImageTk.PhotoImage((Image.open("D:\Project1_BSA\Images_Icons\Bookshop_img.png")).resize((320,300)))
     
      # title
     root.title("Customer_Window | BOOKSHOP AUTOMATION SYSTEM")
@@ -355,7 +355,7 @@ def books():
     root1.title("Books Window | BOOKSHOP AUTOMATION SYSTEM")
     # colour
     root1.configure(bg="orange")
-    root1.iconbitmap('D:\Project_1\Images_Icons\Bookshop_icon_2.ico')
+    root1.iconbitmap('D:\Project1_BSA\Images_Icons\Bookshop_icon_2.ico')
 
     text_label=Label(root1,text="VS Book Store",font=('Helvatical bold',50),relief=SUNKEN,bg='ivory3',padx=70)
     text_label.grid(row=0,column=0,columnspan=4,sticky=W+E,padx=30)
@@ -602,16 +602,13 @@ def add_to_cart():
         else:
             is_isbn=False       
             
-            sql_query1="SELECT ISBN,title,author_name,rack_number, sell_price,quantity from inventory where ISBN=(%s);"
+            sql_query1="SELECT ISBN,title,author_name,rack_number, sell_price from inventory where ISBN=(%s);"
             cursor.execute(sql_query1,(isbn,))
             cart_list=cursor.fetchall()
             print(cart_list)
             date_time=datetime.now()
             now1=date_time.strftime('%Y-%M-%D %H:%M:%S')
             books_quantity=simpledialog.askinteger("Input","Enter the number of books on your selection of purchase!")
-            if(books_quantity>cart_list[0][5]):
-                messagebox.showerror("info","Enter quantity as per given in the screen")
-                books_quantity=simpledialog.askinteger("Input","Enter the number of books on your selection of purchase!")
             sql_query2="INSERT INTO cart(time_date,customer_name,isbn_no,title,author,no_of_books,sell_price,rack_number) VALUES(%s,%s,%s,%s,%s,%s,%s,%s);"
             
             for item in cart_list:
@@ -740,7 +737,7 @@ def Request_func():
     request_win=Toplevel()
     request_win.configure(bg="orange")
     request_win.geometry('600x500')
-    request_win.iconbitmap('D:\Project_1\Images_Icons\Bookshop_icon_2.ico')
+    request_win.iconbitmap('D:\Project1_BSA\Images_Icons\Bookshop_icon_2.ico')
     
     request_field_label=Label(request_win,text="Enter details fro procurement",bg='violet',padx=20,relief=SUNKEN,borderwidth=5)
     request_field_label.place(x=5,y=120)
@@ -786,7 +783,7 @@ def cart_win():
     # Geometry or dimensions of root Window
     cart_window.geometry('800x680')
     # Displaying Icon
-    cart_window.iconbitmap('D:\Project_1\Images_Icons\Bookshop_icon_2.ico')
+    cart_window.iconbitmap('D:\Project1_BSA\Images_Icons\Bookshop_icon_2.ico')
     
     books_frame1=Frame(cart_window,padx=5,pady=5,bg="coral")
     books_frame1.place(x=50,y=290,height=350,width=700)
@@ -1008,7 +1005,7 @@ def Invoice():
     # Geometry or dimensions of root Window
     Invoice_win.geometry('800x680')
     # Displaying Icon
-    Invoice_win.iconbitmap('D:\Project_1\Images_Icons\Bookshop_icon_2.ico')
+    Invoice_win.iconbitmap('D:\Project1_BSA\Images_Icons\Bookshop_icon_2.ico')
      # title
     Invoice_win.title("Invoice | BOOKSHOP AUTOMATION SYSTEM")
 
@@ -1083,7 +1080,7 @@ def sales_window():
     # Geometry or dimensions of root Window
     sales_win.geometry('800x680')
     # Displaying Icon
-    sales_win.iconbitmap('D:\Project_1\Images_Icons\Bookshop_icon_2.ico')
+    sales_win.iconbitmap('D:\Project1_BSA\Images_Icons\Bookshop_icon_2.ico')
      # title
     sales_win.title(" Sales Clerk | BOOKSHOP AUTOMATION SYSTEM")
     
@@ -1310,7 +1307,7 @@ def employee_window():
     # Geometry or dimensions of root Window
     employee_win.geometry('650x750')
     # Displaying Icon
-    employee_win.iconbitmap('D:\Project_1\Images_Icons\Bookshop_icon_2.ico')
+    employee_win.iconbitmap('D:\Project1_BSA\Images_Icons\Bookshop_icon_2.ico')
     
      # title
     employee_win.title("Employee | BOOKSHOP AUTOMATION SYSTEM")
@@ -1380,7 +1377,7 @@ def manager_window():
     # Geometry or dimensions of root Window
     manager_win.geometry('800x680')
     # Displaying Icon
-    manager_win.iconbitmap('D:\Project_1\Images_Icons\Bookshop_icon_2.ico')
+    manager_win.iconbitmap('D:\Project1_BSA\Images_Icons\Bookshop_icon_2.ico')
     
      # title
     manager_win.title("Manager | BOOKSHOP AUTOMATION SYSTEM")
@@ -1404,6 +1401,7 @@ def statistics1():
     books_qty=0
     book_tit=""
     max_threshold_level=0
+    inv_level=0
     for stats in stats_list1:
         sql_query1="SELECT DATEDIFF(%s,%s)+1;"
         cursor.execute(sql_query1,(now,stats[0]))
@@ -1455,7 +1453,7 @@ def statistics1():
             size+=55
     else:
         not_found_label1=Label(threshold_frame,text="No books below threshold",font=("Helvetica",12,"bold"),anchor=CENTER,bg="ivory3")
-        not_found_label1.place(x=200,y=250)
+        not_found_label1.place(x=200,y=215)
          
             
 
@@ -1480,7 +1478,7 @@ def owner_window():
     # Geometry or dimensions of root Window
     owner_win.geometry('800x680')
     # Displaying Icon
-    owner_win.iconbitmap('D:\Project_1\Images_Icons\Bookshop_icon_2.ico')
+    owner_win.iconbitmap('D:\Project1_BSA\Images_Icons\Bookshop_icon_2.ico')
     
      # title
     owner_win.title("Owner | BOOKSHOP AUTOMATION SYSTEM")
@@ -1503,11 +1501,11 @@ def reading_gif():
     # Geometry or dimensions of root Window
     gif_display.geometry('800x400')
     # Displaying Icon
-    gif_display.iconbitmap('D:\Project_1\Images_Icons\Bookshop_icon_2.ico')
+    gif_display.iconbitmap('D:\Project1_BSA\Images_Icons\Bookshop_icon_2.ico')
     
     load_gif=Label(gif_display,bg="ivory3")
     load_gif.pack(padx=20,pady=20)
-    img=Image.open('D:/Project_1/Images_Icons/Searching_books.gif')
+    img=Image.open('D:/Project1_BSA/Images_Icons/Searching_books.gif')
     
     for img in ImageSequence.Iterator(img):
         try:
@@ -1531,7 +1529,7 @@ def cart_image():
 
     load_gif=Label(cart_window,bg="orange")
     load_gif.grid(row=2,column=0,padx=80)
-    img=Image.open('D:/Project_1/Images_Icons/giphy.gif')
+    img=Image.open('D:/Project1_BSA/Images_Icons/giphy.gif')
     
     for img in ImageSequence.Iterator(img):
         try:
@@ -1560,7 +1558,7 @@ def play_gif():
     #global count
     load_gif=Label(VS_access_window,bg="orange")
     load_gif.grid(row=2,column=0,padx=150)
-    img=Image.open('D:/Project_1/Images_Icons/Hiding_eyes3.gif')
+    img=Image.open('D:/Project1_BSA/Images_Icons/Hiding_eyes3.gif')
     
     
     for img in ImageSequence.Iterator(img):
@@ -1644,4 +1642,3 @@ if __name__=="__main__":
     rootaccess.mainloop()
     #commit changes
     connection.commit()
-
